@@ -2,26 +2,19 @@ package br.com.alura.exercicios.gerenciador_pedidos.models;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Table(name = "categoria")
-public class Categoria {
+
+public class Fornecedor {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "nome")
     private String nome;
 
-    @ManyToMany(mappedBy = "categorias")
-    private List <Produto> produtos = new ArrayList<>();
 
 
-
-    public Categoria(){}
-
-    public Categoria(String nome) {
+    public Fornecedor(){}
+    public Fornecedor(String nome) {
         this.nome = nome;
     }
 

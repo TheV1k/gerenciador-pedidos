@@ -2,10 +2,12 @@ package br.com.alura.exercicios.gerenciador_pedidos.models;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "produtos")
 public class Produto {
-
 
 
     @Id
@@ -15,6 +17,24 @@ public class Produto {
     private String nome;
     @Column(name = "valor")
     private Double preco;
+
+    @ManyToOne
+    @JoinColumn(name = "fornecedor_id")
+    Fornecedor fornecedor;
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "produto_categoria",
+            joinColumns = @JoinColumn(name = "produtos_id"),
+            inverseJoinColumns = @JoinColumn(name = "categoria_id")
+    )
+
+    private List<Categoria> categorias = new ArrayList<>();
+
+    public Produto(List<Categoria> categorias) {
+        this.categorias = categorias;
+    }
 
     public  Produto(){}
     public Produto(String nome, Double preco) {
@@ -44,5 +64,21 @@ public class Produto {
 
     public void setPreco(Double preco) {
         this.preco = preco;
+    }
+
+    public List<Categoria> getCategorias() {
+        return categorias;
+    }
+
+    public void setCategorias(List<Categoria> categorias) {
+        this.categorias = categorias;
+    }
+
+    public Fornecedor getFornecedor() {
+        return fornecedor;
+    }
+
+    public void setFornecedor(Fornecedor fornecedor) {
+        this.fornecedor = fornecedor;
     }
 }
