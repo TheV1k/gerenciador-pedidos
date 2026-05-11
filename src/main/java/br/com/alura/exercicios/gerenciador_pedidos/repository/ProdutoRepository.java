@@ -8,7 +8,11 @@ import java.util.Optional;
 
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
-    Optional<Produto> findByNomeContainingIgnoreCase(String nome);
+    Optional<Produto> findByNomeEqualsIgnoreCase(String nome);
 
     List<Produto> findByPrecoGreaterThanEqual(double valorPesquisado);
+
+    List<Produto> findByPrecoLessThanEqual(double valorPesquisado);
+
+    List<Produto> findByNomeContainsIgnoreCase(String produtoPesquisado);
 }

@@ -4,13 +4,13 @@ import jakarta.persistence.*;
 
 
 @Entity
+@Table(name = "fornecedor")
 
 public class Fornecedor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
-
 
 
     public Fornecedor(){}
@@ -33,4 +33,18 @@ public class Fornecedor {
     public void setNome(String nome) {
         this.nome = nome;
     }
+
+
+
+    @Override
+    public String toString() {
+        return "Fornecedor{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                '}';
+    }
+
+
 }
+
+
