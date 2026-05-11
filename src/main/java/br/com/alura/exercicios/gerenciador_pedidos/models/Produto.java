@@ -18,7 +18,7 @@ public class Produto {
     @Column(name = "valor")
     private Double preco;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fornecedor_id")
     Fornecedor fornecedor;
 
@@ -80,5 +80,14 @@ public class Produto {
 
     public void setFornecedor(Fornecedor fornecedor) {
         this.fornecedor = fornecedor;
+    }
+
+    @Override
+    public String toString() {
+        return
+                "id: " + id + " | " +
+                " nome: " + nome  + " | " +
+                " preco: " + preco
+                ;
     }
 }

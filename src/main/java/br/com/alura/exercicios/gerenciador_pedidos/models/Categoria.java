@@ -14,7 +14,7 @@ public class Categoria {
     @Column(name = "nome")
     private String nome;
 
-    @ManyToMany(mappedBy = "categorias")
+    @ManyToMany(mappedBy = "categorias", fetch = FetchType.EAGER)
     private List <Produto> produtos = new ArrayList<>();
 
 
@@ -39,5 +39,12 @@ public class Categoria {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    @Override
+    public String toString() {
+        return "id: " + id +
+                "nome: " + nome + '\'' +
+                "produto: " + produtos;
     }
 }
