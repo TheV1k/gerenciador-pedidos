@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "produtos")
@@ -22,6 +23,8 @@ public class Produto {
     @JoinColumn(name = "fornecedor_id")
     Fornecedor fornecedor;
 
+    @ManyToMany(mappedBy = "produtos")
+    private Set<Pedido> pedidos;
 
     @ManyToMany
     @JoinTable(
@@ -81,6 +84,16 @@ public class Produto {
     public void setFornecedor(Fornecedor fornecedor) {
         this.fornecedor = fornecedor;
     }
+
+    public Set<Pedido> getPedidos() {
+        return pedidos;
+    }
+
+    public void setPedidos(Set<Pedido> pedidos) {
+        this.pedidos = pedidos;
+    }
+
+
 
     @Override
     public String toString() {

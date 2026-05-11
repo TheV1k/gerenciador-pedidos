@@ -25,13 +25,23 @@ public class GerenciadorPedidosApplication implements CommandLineRunner {
 		SpringApplication.run(GerenciadorPedidosApplication.class, args);
 	}
 
+	public GerenciadorPedidosApplication(PedidoRepository repositorioPedido, CategoriaRepository repositorioCategoria, ProdutoRepository repositorioProduto, FornecedorRepository repositorioFornecedor) {
+		this.repositorioPedido = repositorioPedido;
+		this.repositorioCategoria = repositorioCategoria;
+		this.repositorioProduto = repositorioProduto;
+		this.repositorioFornecedor = repositorioFornecedor;
+	}
+
 	@Override
 	public void run(String... args) throws Exception {
-	Principal principal = new Principal(repositorioProduto, repositorioCategoria, repositorioFornecedor);
+
+
+	Principal principal = new Principal(repositorioProduto, repositorioCategoria, repositorioFornecedor, repositorioPedido);
     principal.exibeMenu();
 
 
 		}
+
 
 	}
 

@@ -1,16 +1,15 @@
 package br.com.alura.exercicios.gerenciador_pedidos.Principal;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Categoria;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Fornecedor;
-import br.com.alura.exercicios.gerenciador_pedidos.repository.CategoriaRepository;
-import br.com.alura.exercicios.gerenciador_pedidos.repository.FornecedorRepository;
-import br.com.alura.exercicios.gerenciador_pedidos.repository.ProdutoRepository;
+import br.com.alura.exercicios.gerenciador_pedidos.models.Pedido;
+import br.com.alura.exercicios.gerenciador_pedidos.repository.*;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.ProdutoRepository;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
-
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 
 public class Principal {
@@ -18,6 +17,7 @@ public class Principal {
     private ProdutoRepository repositorioProduto;
     private CategoriaRepository repositorioCategoria;
     private FornecedorRepository repositorioFornecedor;
+    private PedidoRepository repositorioPedido;
 
     public Principal(ProdutoRepository repositorioProduto) {
         this.repositorioProduto = repositorioProduto;
@@ -42,6 +42,13 @@ public class Principal {
         this.repositorioFornecedor = repositorioFornecedor;
     }
 
+    public Principal(ProdutoRepository repositorioProduto, CategoriaRepository repositorioCategoria, FornecedorRepository repositorioFornecedor, PedidoRepository repositorioPedido) {
+        this.repositorioProduto = repositorioProduto;
+        this.repositorioCategoria = repositorioCategoria;
+        this.repositorioFornecedor = repositorioFornecedor;
+        this.repositorioPedido = repositorioPedido;
+    }
+
     public void exibeMenu() {
         var busca = -1;
         while (busca != 0) {
@@ -50,11 +57,14 @@ public class Principal {
                     
                     1 - Cadastrar Produto
                     2 - Cadastrar Fornecedor
-                    3 - Buscar produto pelo nome
-                    4 - Buscar categoria
-                    5 - Buscar valores maiores do que o fornecido
-                    6 - Buscar valores menores do que o fornecido
-                    7 - Buscar produto (Usando apenas parte do nome)
+                    3 - Cadastrar Pedido
+                    4 - Buscar produto pelo nome
+                    5 - Buscar categoria
+                    6 - Buscar valores maiores do que o fornecido
+                    7 - Buscar valores menores do que o fornecido
+                    8 - Buscar produto (Usando apenas parte do nome)
+                    9 - Listar pedidos sem data de entrega
+                    10 - Listar pedidos com data de entrega
                     0 - Sair
                     """;
             System.out.println(menu);
@@ -66,22 +76,30 @@ public class Principal {
                     break;
                 case 2:
                     cadastrarFornecedor();
+                    break;
                 case 3:
-                    buscarProduto();
+                    cadastrarPedido();
                     break;
                 case 4:
+                    buscarProduto();
+                    break;
+                case 5:
                     buscarCategoria();
                     break;
 
-                case 5:
+                case 6:
                     buscarValorMaior();
                     break;
-                case 6:
+                case 7:
                     buscarMenoresValores();
                     break;
-                case 7:
+                case 8:
                     buscarParteDoNome();
                     break;
+                case 9:
+                    buscarpedidosSemData();
+                case 10:
+                    buscarpedidosComData();
                 case 0:
                     System.out.println("Encerrando aplicação");
                     break;
@@ -135,6 +153,48 @@ public class Principal {
 
     }
 
+    private void cadastrarPedido(){
+
+        Pedido pedido = new Pedido();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        System.out.println("Informe o fornecedor: ");
+        String informarFornecedor = sc.nextLine();
+        Fornecedor fornecedor = repositorioFornecedor
+                .findFirstByNomeContainingIgnoreCase(informarFornecedor)
+                .orElseThrow(() -> new RuntimeException("Fornecedor não encontrado"));
+
+        LocalDate dataEntrega = null;
+
+        System.out.println("Informe a data de entrega: ");
+        String informarData = sc.nextLine();
+        if (!informarData.isBlank()){
+            dataEntrega = LocalDate.parse(informarData, formatter);
+        }
+
+        Set<Produto> novoPedido = new HashSet<>();
+        String inserirNovo = "S";
+
+        while (inserirNovo.equalsIgnoreCase("S")) {
+            System.out.println("Adicione o produto: ");
+            String inserirProduto = sc.nextLine();
+
+            Produto produto = repositorioProduto
+                    .findByNomeIgnoreCase(inserirProduto);
+
+            novoPedido.add(produto);
+
+            System.out.println("Deseja inserir um novo produto? (S/N)");
+            inserirNovo = sc.nextLine();
+
+            pedido.setFornecedor(fornecedor);
+            pedido.setData(dataEntrega);
+            pedido.setProdutos(novoPedido);
+
+
+        }
+        repositorioPedido.save(pedido);
+    }
+
     private void buscarCategoria(){
         System.out.println("Digite a categoria desejada: ");
         var categoriaPesquisada = sc.nextLine();
@@ -164,6 +224,22 @@ public class Principal {
         List<Produto> produtoLocalizado = repositorioProduto.findByNomeContainsIgnoreCase(produtoPesquisado);
         System.out.println("Produtos encontrados: ");
         produtoLocalizado.forEach(System.out::println);
+    }
+
+    private void buscarpedidosSemData(){
+
+        List<Pedido> pedidosSemDataEntrga = repositorioPedido.findByDataIsNull();
+        System.out.println("Produtos encontrados: ");
+        pedidosSemDataEntrga.forEach(System.out::println);
+
+    }
+
+    private void buscarpedidosComData(){
+
+        List<Pedido> pedidosSemDataEntrga = repositorioPedido.findByDataIsNotNull();
+        System.out.println("Produtos encontrados: ");
+        pedidosSemDataEntrga.forEach(System.out::println);
+
     }
 }
 
