@@ -1,5 +1,6 @@
 package br.com.alura.exercicios.gerenciador_pedidos.repository;
 
+import br.com.alura.exercicios.gerenciador_pedidos.models.Categoria;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,4 +17,19 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     List<Produto> findByNomeContainsIgnoreCase(String produtoPesquisado);
     Produto findByNomeIgnoreCase(String nome);
+
+
+
+
+
+    List<Produto> findByCategoriasNomeContainingIgnoreCaseOrderByPrecoDesc(String categoriaPesquisada);
+
+    List<Produto> findByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(String categoriaPesquisada);
+
+    List<Produto> findByNomeContainingIgnoreCase(String produtoPesquisado);
+    Long countByCategoriasNomeContainingIgnoreCase(String nome);
+
+    List<Produto> findTop3ByOrderByPrecoDesc();
+
+    List<Produto> findTop5ByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(String categoriaPesquisada);
 }

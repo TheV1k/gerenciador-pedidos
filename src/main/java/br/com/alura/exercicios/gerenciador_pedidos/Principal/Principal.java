@@ -64,7 +64,15 @@ public class Principal {
                     7 - Buscar valores menores do que o fornecido
                     8 - Buscar produto (Usando apenas parte do nome)
                     9 - Listar pedidos sem data de entrega
-                    10 - Listar pedidos com data de entrega
+                    10 -Listar pedidos com data de entrega
+                    11 -Listar produtos de uma categoria (Valor Crescente) 
+                    12 -Listar produtos de uma categoria (Valor Crescente)
+                    13 - Contar produtos de uma categoria
+                    14 - Buscar pedidos feitos antes de uma data
+                    15 - Pedidos feitos após uma data
+                    16 - Pedidos feitos entre duas datas
+                    17 - Buscar os três produtos mais caros
+                    18 - Cinco Produtos Mais baratos de uma categoria
                     0 - Sair
                     """;
             System.out.println(menu);
@@ -98,8 +106,35 @@ public class Principal {
                     break;
                 case 9:
                     buscarpedidosSemData();
+                    break;
                 case 10:
                     buscarpedidosComData();
+                    break;
+
+                case 11:
+                    listarPorMaiorValor();
+                    break;
+                case 12:
+                    listarPorMenorValor();
+                    break;
+                case 13:
+                    contarProdutosDeUmaCategoria();
+                    break;
+                case 14:
+                    pedidosFeitosAntesDeUmaData();
+                    break;
+                case 15:
+                    pedidosFeitosDepoisDeUmaData();
+                    break;
+                case 16:
+                    pedidosFeitosEntreDuasDatas();
+                    break;
+                case 17:
+                    tresProdutosMaisCaros();
+                    break;
+                case 18:
+                    cincoProdutosMaisBaratosDeUmaCategoria();
+                    break;
                 case 0:
                     System.out.println("Encerrando aplicação");
                     break;
@@ -109,6 +144,8 @@ public class Principal {
             }
         }
     }
+
+
 
     private void cadastrarProduto(){
 
@@ -221,7 +258,7 @@ public class Principal {
     private void buscarParteDoNome(){
         System.out.println("Digite o produto desejado: ");
         var produtoPesquisado = sc.nextLine();
-        List<Produto> produtoLocalizado = repositorioProduto.findByNomeContainsIgnoreCase(produtoPesquisado);
+        List<Produto> produtoLocalizado = repositorioProduto.findByNomeContainingIgnoreCase(produtoPesquisado);
         System.out.println("Produtos encontrados: ");
         produtoLocalizado.forEach(System.out::println);
     }
@@ -241,6 +278,75 @@ public class Principal {
         pedidosSemDataEntrga.forEach(System.out::println);
 
     }
+
+    private void listarPorMaiorValor() {
+        System.out.println("Digite a categoria desejada: ");
+        var categoriaPesquisada = sc.nextLine();
+        List<Produto> produtoOrdenadoValorMaior = repositorioProduto.findByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(categoriaPesquisada);
+        produtoOrdenadoValorMaior.forEach(System.out::println);
+
+    }
+
+    private void listarPorMenorValor() {
+        System.out.println("Digite a categoria desejada: ");
+        var categoriaPesquisada = sc.nextLine();
+        List<Produto> produtoOrdenadoValorMaior = repositorioProduto.findByCategoriasNomeContainingIgnoreCaseOrderByPrecoDesc(categoriaPesquisada);
+        produtoOrdenadoValorMaior.forEach(System.out::println);
+    }
+
+    private void contarProdutosDeUmaCategoria() {
+        System.out.println("Digite a categoria que deseja contar: ");
+        var categoriaContada = sc.nextLine();
+        Long contaCategoria = repositorioProduto.countByCategoriasNomeContainingIgnoreCase(categoriaContada);
+        System.out.println("A categoria " + categoriaContada.toLowerCase() + " contém  " + contaCategoria + " produtos.");
+
+    }
+
+    private void pedidosFeitosAntesDeUmaData() {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        System.out.println("Digite a data a ser pesquisada: ");
+        var pesquisaData = sc.nextLine();
+        LocalDate data = LocalDate.parse(pesquisaData, formatter);
+        List<Pedido> pedidosAnteriores = repositorioPedido.findByDataIsBefore(data);
+        System.out.println(pedidosAnteriores);
+    }
+
+    private void pedidosFeitosDepoisDeUmaData() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        System.out.println("Digite a data a ser pesquisada: ");
+        var pesquisaData = sc.nextLine();
+        LocalDate data = LocalDate.parse(pesquisaData, formatter);
+        List<Pedido> pedidosPosteriores = repositorioPedido.findByDataIsAfter(data);
+        System.out.println(pedidosPosteriores);
+    }
+
+    private void pedidosFeitosEntreDuasDatas() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        System.out.println("Digite a data inicial: ");
+        var pesquisaData = sc.nextLine();
+        LocalDate data1 = LocalDate.parse(pesquisaData, formatter);
+        System.out.println("Digite a data final: ");
+        pesquisaData = sc.nextLine();
+        LocalDate data2 = LocalDate.parse(pesquisaData, formatter);
+        List<Pedido> pedidosEntreDatas = repositorioPedido.findByDataIsBetween(data1, data2);
+        System.out.println(pedidosEntreDatas);
+    }
+
+    private void tresProdutosMaisCaros() {
+        List<Produto> treProdutosMaisCaros = repositorioProduto.findTop3ByOrderByPrecoDesc();
+        System.out.println(treProdutosMaisCaros);
+    }
+
+    private void cincoProdutosMaisBaratosDeUmaCategoria() {
+
+        System.out.println("Digite a categoria desejada: ");
+        var categoriaPesquisada = sc.nextLine();
+        List<Produto> topCincoProdutosMaisBaratos = repositorioProduto.findTop5ByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(categoriaPesquisada);
+        topCincoProdutosMaisBaratos.forEach(System.out::println);
+    }
+
+
 }
 
 
