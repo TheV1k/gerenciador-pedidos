@@ -13,9 +13,11 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
     List<Pedido> findByDataIsNotNull();
 
-    List<Pedido> findByDataIsBefore(LocalDate pesquisaData);
+    
 
-    List<Pedido> findByDataIsAfter(LocalDate data);
+    List<Pedido> findByDataBetween(LocalDate data1, LocalDate data2);
 
-    List<Pedido> findByDataIsBetween(LocalDate data1, LocalDate data2);
+    List<Pedido> findByDataAfter(LocalDate data);
+
+    List<Pedido> findByDataBefore(LocalDate data);
 }

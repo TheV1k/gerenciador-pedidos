@@ -1,52 +1,29 @@
 package br.com.alura.exercicios.gerenciador_pedidos.Principal;
-import br.com.alura.exercicios.gerenciador_pedidos.models.Categoria;
-import br.com.alura.exercicios.gerenciador_pedidos.models.Fornecedor;
-import br.com.alura.exercicios.gerenciador_pedidos.models.Pedido;
-import br.com.alura.exercicios.gerenciador_pedidos.repository.*;
-import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
-import br.com.alura.exercicios.gerenciador_pedidos.repository.ProdutoRepository;
-import org.springframework.format.annotation.DateTimeFormat;
+import br.com.alura.exercicios.gerenciador_pedidos.service.CategoriaService;
+import br.com.alura.exercicios.gerenciador_pedidos.service.FornecedorService;
+import br.com.alura.exercicios.gerenciador_pedidos.service.PedidoService;
+import br.com.alura.exercicios.gerenciador_pedidos.service.ProdutoService;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-
+@Component
 public class Principal {
+
+   private final ProdutoService produtoService;
+   private final CategoriaService categoriaService;
+   private final PedidoService pedidoService;
+   private final FornecedorService fornecedorService;
     Scanner sc = new Scanner(System.in);
-    private ProdutoRepository repositorioProduto;
-    private CategoriaRepository repositorioCategoria;
-    private FornecedorRepository repositorioFornecedor;
-    private PedidoRepository repositorioPedido;
 
-    public Principal(ProdutoRepository repositorioProduto) {
-        this.repositorioProduto = repositorioProduto;
-    }
 
-    public Principal(CategoriaRepository repositorioCategoria) {
-        this.repositorioCategoria = repositorioCategoria;
-    }
-
-    public Principal(ProdutoRepository repositorioProduto, CategoriaRepository repositorioCategoria) {
-        this.repositorioProduto = repositorioProduto;
-        this.repositorioCategoria = repositorioCategoria;
-    }
-
-    public Principal(FornecedorRepository repositorioFornecedor) {
-        this.repositorioFornecedor = repositorioFornecedor;
-    }
-
-    public Principal(ProdutoRepository repositorioProduto, CategoriaRepository repositorioCategoria, FornecedorRepository repositorioFornecedor) {
-        this.repositorioProduto = repositorioProduto;
-        this.repositorioCategoria = repositorioCategoria;
-        this.repositorioFornecedor = repositorioFornecedor;
-    }
-
-    public Principal(ProdutoRepository repositorioProduto, CategoriaRepository repositorioCategoria, FornecedorRepository repositorioFornecedor, PedidoRepository repositorioPedido) {
-        this.repositorioProduto = repositorioProduto;
-        this.repositorioCategoria = repositorioCategoria;
-        this.repositorioFornecedor = repositorioFornecedor;
-        this.repositorioPedido = repositorioPedido;
+    public Principal(ProdutoService produtoService, CategoriaService categoriaService, PedidoService pedidoService, FornecedorService fornecedorService) {
+        this.produtoService = produtoService;
+        this.categoriaService = categoriaService;
+        this.pedidoService = pedidoService;
+        this.fornecedorService = fornecedorService;
     }
 
     public void exibeMenu() {
@@ -58,21 +35,22 @@ public class Principal {
                     1 - Cadastrar Produto
                     2 - Cadastrar Fornecedor
                     3 - Cadastrar Pedido
-                    4 - Buscar produto pelo nome
-                    5 - Buscar categoria
-                    6 - Buscar valores maiores do que o fornecido
-                    7 - Buscar valores menores do que o fornecido
-                    8 - Buscar produto (Usando apenas parte do nome)
-                    9 - Listar pedidos sem data de entrega
-                    10 -Listar pedidos com data de entrega
-                    11 -Listar produtos de uma categoria (Valor Crescente) 
-                    12 -Listar produtos de uma categoria (Valor Crescente)
-                    13 - Contar produtos de uma categoria
-                    14 - Buscar pedidos feitos antes de uma data
-                    15 - Pedidos feitos após uma data
-                    16 - Pedidos feitos entre duas datas
-                    17 - Buscar os três produtos mais caros
-                    18 - Cinco Produtos Mais baratos de uma categoria
+                    4 - Cadastrar Categoria
+                    5 - Buscar produto pelo nome
+                    6 - Buscar categoria
+                    7 - Buscar valores maiores do que o fornecido
+                    8 - Buscar valores menores do que o fornecido
+                    9 - Buscar produto (Usando apenas parte do nome)
+                    10 - Listar pedidos sem data de entrega
+                    11 -Listar pedidos com data de entrega
+                    12 -Listar produtos de uma categoria (Valor Crescente) 
+                    13 -Listar produtos de uma categoria (Valor Decrescente)
+                    14 - Contar produtos de uma categoria
+                    15 - Buscar pedidos feitos antes de uma data
+                    16 - Pedidos feitos após uma data
+                    17 - Pedidos feitos entre duas datas
+                    18 - Buscar os três produtos mais caros
+                    19 - Cinco Produtos Mais baratos de uma categoria
                     0 - Sair
                     """;
             System.out.println(menu);
@@ -89,50 +67,52 @@ public class Principal {
                     cadastrarPedido();
                     break;
                 case 4:
-                    buscarProduto();
+                    cadastrarCategoria();
                     break;
                 case 5:
+                    buscarProduto();
+                    break;
+                case 6:
                     buscarCategoria();
                     break;
-
-                case 6:
+                case 7:
                     buscarValorMaior();
                     break;
-                case 7:
+                case 8:
                     buscarMenoresValores();
                     break;
-                case 8:
+                case 9:
                     buscarParteDoNome();
                     break;
-                case 9:
+                case 10:
                     buscarpedidosSemData();
                     break;
-                case 10:
+                case 11:
                     buscarpedidosComData();
                     break;
 
-                case 11:
+                case 12:
                     listarPorMaiorValor();
                     break;
-                case 12:
+                case 13:
                     listarPorMenorValor();
                     break;
-                case 13:
+                case 14:
                     contarProdutosDeUmaCategoria();
                     break;
-                case 14:
+                case 15:
                     pedidosFeitosAntesDeUmaData();
                     break;
-                case 15:
+                case 16:
                     pedidosFeitosDepoisDeUmaData();
                     break;
-                case 16:
+                case 17:
                     pedidosFeitosEntreDuasDatas();
                     break;
-                case 17:
+                case 18:
                     tresProdutosMaisCaros();
                     break;
-                case 18:
+                case 19:
                     cincoProdutosMaisBaratosDeUmaCategoria();
                     break;
                 case 0:
@@ -146,11 +126,11 @@ public class Principal {
     }
 
 
-
     private void cadastrarProduto(){
 
         System.out.println("Digite o produto");
         String nome = sc.nextLine();
+
         System.out.println("Digite o valor do produto: ");
         double preco = sc.nextDouble();
         sc.nextLine();
@@ -158,16 +138,10 @@ public class Principal {
         String nomeCategoria = sc.nextLine();
         System.out.println("Informe o fornecedor do produto: ");
         String nomeFornecedor = sc.nextLine();
-        Categoria categoria = repositorioCategoria
-                .findByNomeContainingIgnoreCase(nomeCategoria).get(0);
-        Fornecedor fornecedor = repositorioFornecedor
-                .findByNomeContainingIgnoreCase(nomeFornecedor).get(0);
-        Produto produto = new Produto(nome, preco);
-        produto.setCategorias(List.of(categoria));
-        produto.setFornecedor(fornecedor);
-        repositorioProduto.save(produto);
 
-        System.out.println(produto + "\n Cadastrado com sucesso!");
+        produtoService.cadastrarProduto(nome,preco, nomeCategoria, nomeFornecedor);
+
+        System.out.println(nome + " cadastrado com sucesso!");
 
 
     }
@@ -176,129 +150,122 @@ public class Principal {
 
         System.out.println("Informe o nome do novo fornecedor: ");
         String novoFornecedor = sc.nextLine();
-        Fornecedor fornecedorCadastrado = new Fornecedor(novoFornecedor);
-        repositorioFornecedor.save(fornecedorCadastrado);
-        System.out.println(novoFornecedor + "Cadastrado com sucesso!");
+
+        fornecedorService.cadastrarFornecedor(novoFornecedor);
+        System.out.println(novoFornecedor +" cadastrado com sucesso.");
+
+    }
+
+    private void cadastrarCategoria() {
+        System.out.println("Digite a categoria: ");
+        var nomeCategoria = sc.nextLine();
+
+        categoriaService.cadastrarCategoria(nomeCategoria);
+        System.out.println(nomeCategoria + " cadastrada com sucesso.");
     }
 
     private void buscarProduto(){
         System.out.println("Digite o produto desejado: ");
         var produtoPesquisado = sc.nextLine();
-        Optional<Produto> produtoEncontrado = repositorioProduto.findByNomeEqualsIgnoreCase(produtoPesquisado);
-        System.out.println("Produto encontrado: ");
-        System.out.println(produtoEncontrado);
+
+        produtoService.buscarProduto(produtoPesquisado);
 
     }
 
-    private void cadastrarPedido(){
 
-        Pedido pedido = new Pedido();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        System.out.println("Informe o fornecedor: ");
+
+    private void cadastrarPedido() {
+
+        System.out.println("Informe o fornecedor:");
         String informarFornecedor = sc.nextLine();
-        Fornecedor fornecedor = repositorioFornecedor
-                .findFirstByNomeContainingIgnoreCase(informarFornecedor)
-                .orElseThrow(() -> new RuntimeException("Fornecedor não encontrado"));
 
-        LocalDate dataEntrega = null;
-
-        System.out.println("Informe a data de entrega: ");
+        System.out.println("Informe a data de entrega (dd/MM/yyyy):");
         String informarData = sc.nextLine();
-        if (!informarData.isBlank()){
-            dataEntrega = LocalDate.parse(informarData, formatter);
-        }
 
-        Set<Produto> novoPedido = new HashSet<>();
+        List<String> produtos = new ArrayList<>();
+
         String inserirNovo = "S";
 
         while (inserirNovo.equalsIgnoreCase("S")) {
-            System.out.println("Adicione o produto: ");
+
+            System.out.println("Adicione o produto:");
             String inserirProduto = sc.nextLine();
 
-            Produto produto = repositorioProduto
-                    .findByNomeIgnoreCase(inserirProduto);
-
-            novoPedido.add(produto);
+            produtos.add(inserirProduto);
 
             System.out.println("Deseja inserir um novo produto? (S/N)");
             inserirNovo = sc.nextLine();
-
-            pedido.setFornecedor(fornecedor);
-            pedido.setData(dataEntrega);
-            pedido.setProdutos(novoPedido);
-
-
         }
-        repositorioPedido.save(pedido);
+
+        pedidoService.cadastrarPedido(
+                informarFornecedor,
+                informarData,
+                produtos
+        );
+
+        System.out.println("\nPedido cadastrado com sucesso!");
     }
 
     private void buscarCategoria(){
         System.out.println("Digite a categoria desejada: ");
         var categoriaPesquisada = sc.nextLine();
-        List<Categoria> produtoPorCategoria = repositorioCategoria.findByNomeContainingIgnoreCase(categoriaPesquisada);
-        produtoPorCategoria.forEach(System.out::println);
+
+        categoriaService.buscarCategoria(categoriaPesquisada);
     }
 
     private void buscarValorMaior(){
         System.out.println("Informe o valor a ser pesquisado: ");
         var valorPesquisado = sc.nextDouble();
-        List<Produto> produtoValorMaior = repositorioProduto.findByPrecoGreaterThanEqual(valorPesquisado);
-        System.out.println("Produtos Encontrados: ");
-       produtoValorMaior.forEach(System.out::println);
+        sc.nextLine();
+
+        produtoService.buscarValorMaior(valorPesquisado);
+
     }
 
     private void buscarMenoresValores(){
         System.out.println("Informe o valor a ser pesquisado: ");
         var valorPesquisado = sc.nextDouble();
-        List<Produto> produtoValorMaior = repositorioProduto.findByPrecoLessThanEqual(valorPesquisado);
-        System.out.println("Produtos Encontrados: ");
-        produtoValorMaior.forEach(System.out::println);
+        sc.nextLine();
+
+        produtoService.buscarMenoresValores(valorPesquisado);
+
     }
 
     private void buscarParteDoNome(){
         System.out.println("Digite o produto desejado: ");
         var produtoPesquisado = sc.nextLine();
-        List<Produto> produtoLocalizado = repositorioProduto.findByNomeContainingIgnoreCase(produtoPesquisado);
-        System.out.println("Produtos encontrados: ");
-        produtoLocalizado.forEach(System.out::println);
+        produtoService.buscarParteDoNome(produtoPesquisado);
     }
 
     private void buscarpedidosSemData(){
 
-        List<Pedido> pedidosSemDataEntrga = repositorioPedido.findByDataIsNull();
-        System.out.println("Produtos encontrados: ");
-        pedidosSemDataEntrga.forEach(System.out::println);
+       pedidoService.buscarPedidosSemData();
 
     }
 
     private void buscarpedidosComData(){
 
-        List<Pedido> pedidosSemDataEntrga = repositorioPedido.findByDataIsNotNull();
-        System.out.println("Produtos encontrados: ");
-        pedidosSemDataEntrga.forEach(System.out::println);
+       pedidoService.buscarPedidosComData();
 
     }
 
     private void listarPorMaiorValor() {
         System.out.println("Digite a categoria desejada: ");
         var categoriaPesquisada = sc.nextLine();
-        List<Produto> produtoOrdenadoValorMaior = repositorioProduto.findByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(categoriaPesquisada);
-        produtoOrdenadoValorMaior.forEach(System.out::println);
+        produtoService.listarPorMaiorValor(categoriaPesquisada);
 
     }
 
     private void listarPorMenorValor() {
         System.out.println("Digite a categoria desejada: ");
         var categoriaPesquisada = sc.nextLine();
-        List<Produto> produtoOrdenadoValorMaior = repositorioProduto.findByCategoriasNomeContainingIgnoreCaseOrderByPrecoDesc(categoriaPesquisada);
-        produtoOrdenadoValorMaior.forEach(System.out::println);
+        produtoService.listarPorMenorValor(categoriaPesquisada);
     }
 
     private void contarProdutosDeUmaCategoria() {
         System.out.println("Digite a categoria que deseja contar: ");
         var categoriaContada = sc.nextLine();
-        Long contaCategoria = repositorioProduto.countByCategoriasNomeContainingIgnoreCase(categoriaContada);
-        System.out.println("A categoria " + categoriaContada.toLowerCase() + " contém  " + contaCategoria + " produtos.");
+        produtoService.contarProdutosDeUmaCategoria(categoriaContada);
 
     }
 
@@ -308,8 +275,8 @@ public class Principal {
         System.out.println("Digite a data a ser pesquisada: ");
         var pesquisaData = sc.nextLine();
         LocalDate data = LocalDate.parse(pesquisaData, formatter);
-        List<Pedido> pedidosAnteriores = repositorioPedido.findByDataIsBefore(data);
-        System.out.println(pedidosAnteriores);
+
+        pedidoService.pedidosFeitosAntesDeUmaData(data);
     }
 
     private void pedidosFeitosDepoisDeUmaData() {
@@ -317,8 +284,7 @@ public class Principal {
         System.out.println("Digite a data a ser pesquisada: ");
         var pesquisaData = sc.nextLine();
         LocalDate data = LocalDate.parse(pesquisaData, formatter);
-        List<Pedido> pedidosPosteriores = repositorioPedido.findByDataIsAfter(data);
-        System.out.println(pedidosPosteriores);
+        pedidoService.pedidosFeitosDepoisDeUmaData(data);
     }
 
     private void pedidosFeitosEntreDuasDatas() {
@@ -329,21 +295,18 @@ public class Principal {
         System.out.println("Digite a data final: ");
         pesquisaData = sc.nextLine();
         LocalDate data2 = LocalDate.parse(pesquisaData, formatter);
-        List<Pedido> pedidosEntreDatas = repositorioPedido.findByDataIsBetween(data1, data2);
-        System.out.println(pedidosEntreDatas);
+        pedidoService.pedidosFeitosEntreDuasDatas(data1, data2);
     }
 
     private void tresProdutosMaisCaros() {
-        List<Produto> treProdutosMaisCaros = repositorioProduto.findTop3ByOrderByPrecoDesc();
-        System.out.println(treProdutosMaisCaros);
+        produtoService.tresProdutosMaisCaros();
     }
 
     private void cincoProdutosMaisBaratosDeUmaCategoria() {
 
         System.out.println("Digite a categoria desejada: ");
         var categoriaPesquisada = sc.nextLine();
-        List<Produto> topCincoProdutosMaisBaratos = repositorioProduto.findTop5ByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(categoriaPesquisada);
-        topCincoProdutosMaisBaratos.forEach(System.out::println);
+        produtoService.cincoProdutosMaisBaratosDeUmaCategoria(categoriaPesquisada);
     }
 
 
