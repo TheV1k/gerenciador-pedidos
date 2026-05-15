@@ -45,7 +45,7 @@ src/main/java
 
 - Java 21+
 - Maven
-- MySQL
+- PostgreSQL
 
 ## Clone o repositório
 
