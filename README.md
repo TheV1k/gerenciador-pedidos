@@ -22,7 +22,7 @@ Sistema desenvolvido em Java com Spring Boot para gerenciamento de pedidos, prod
 - Spring Data JPA
 - Hibernate
 - Maven
-- MySQL
+- PostgreSQL
 - IntelliJ IDEA
 
 ---
