@@ -148,5 +148,28 @@ public class ProdutoService {
 
     }
 
+    //Lista produtos por fornecedor
+
+    public List<Produto> produtosPorFornecedor(String buscarFornecedor){
+
+        List<Produto> produtoPorFornecedor = repositorioProduto
+                .findByFornecedorNomeContainingIgnoreCase(buscarFornecedor);
+
+        return  produtoPorFornecedor;
+    }
+
+    public Produto deletaProduto(String excluiProduto){
+
+        Produto produto = repositorioProduto
+                .findByNome(excluiProduto);
+
+        if (produto != null){
+
+            repositorioProduto.delete(produto);
+
+            return produto;
+        }
+        return null;
+    }
 
 }

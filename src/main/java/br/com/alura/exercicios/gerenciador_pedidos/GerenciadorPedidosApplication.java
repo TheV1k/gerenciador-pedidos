@@ -22,10 +22,7 @@ public class GerenciadorPedidosApplication implements CommandLineRunner {
 
     principal.exibeMenu();
 
-
 		}
-
-
 
 
 	}

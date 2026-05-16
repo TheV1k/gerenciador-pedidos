@@ -1,4 +1,5 @@
 package br.com.alura.exercicios.gerenciador_pedidos.Principal;
+import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
 import br.com.alura.exercicios.gerenciador_pedidos.service.CategoriaService;
 import br.com.alura.exercicios.gerenciador_pedidos.service.FornecedorService;
 import br.com.alura.exercicios.gerenciador_pedidos.service.PedidoService;
@@ -51,6 +52,11 @@ public class Principal {
                     17 - Pedidos feitos entre duas datas
                     18 - Buscar os três produtos mais caros
                     19 - Cinco Produtos Mais baratos de uma categoria
+                    20 - Lista produtos por fornecedor
+                    21 - Editar data de entrega do pedido
+                    22 - Excluir pedido
+                    23 - Excluir fornecedor
+                    24 - Excluir Produto
                     0 - Sair
                     """;
             System.out.println(menu);
@@ -115,6 +121,19 @@ public class Principal {
                 case 19:
                     cincoProdutosMaisBaratosDeUmaCategoria();
                     break;
+                case 20:
+                    listarProdutosPorFornecedor();
+                    break;
+                case 21:
+                    editarDataDoPedido();
+                    break;
+                case 22:
+                    deletarPedido();
+                    break;
+                case 23:
+                    deletarFornecedor();
+                case 24:
+                    deletarProduto();
                 case 0:
                     System.out.println("Encerrando aplicação");
                     break;
@@ -124,6 +143,8 @@ public class Principal {
             }
         }
     }
+
+
 
 
     private void cadastrarProduto(){
@@ -309,7 +330,113 @@ public class Principal {
         produtoService.cincoProdutosMaisBaratosDeUmaCategoria(categoriaPesquisada);
     }
 
+    private void listarProdutosPorFornecedor() {
 
+        System.out.println("Digite qual fornecedor você deseja pesquisar: ");
+        var buscarFornecedor = sc.nextLine();
+        System.out.println("Segue produtos do fornecedor: " + buscarFornecedor);
+       List<Produto> produtos = produtoService
+                .produtosPorFornecedor(buscarFornecedor);
+
+       produtos.forEach(System.out::println);
+
+    }
+
+    private void editarDataDoPedido() {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        System.out.println("Informe o ID do pedido: ");
+        Long idPedido = sc.nextLong();
+        sc.nextLine();
+        System.out.println("Informe a de entrega: ");
+
+        String editaData = sc.nextLine();
+        LocalDate novaData = null;
+
+        if (!editaData.isBlank()){
+
+            novaData = LocalDate.parse(editaData, formatter);
+        }
+
+        pedidoService.editarDataPedido(idPedido, novaData);
+        System.out.println("Data de entrega do pedido " +  idPedido +" atualizada para: " + novaData);
+
+    }
+
+    private void deletarPedido() {
+
+        System.out.println("Informe o ID que deseja excluir");
+        Long idPedido = sc.nextLong();
+        sc.nextLine();
+        var confirmacaoExclusao = "N";
+
+        System.out.println("Confirma a exclusão do pedido?");
+        confirmacaoExclusao = sc.nextLine().toUpperCase().trim();
+
+            switch (confirmacaoExclusao){
+
+                case "N":
+                System.out.println("Solicitação cancelada. O pedido não será cancelado");
+                break;
+            case "S":
+                pedidoService.deletarPedido(idPedido);
+                System.out.println(idPedido + " Excluído com sucesso!");
+                break;
+            default:
+                System.out.println("Opção inválida!");
+                break;
+        }
+
+
+        }
+    private void deletarFornecedor() {
+
+        System.out.println("Informe o Fornecedor que deseja excluir");
+        String excluirFornecedor = sc.nextLine();
+        var confirmacaoExclusao = "N";
+
+        System.out.println("Confirma a exclusão do fornecedor?");
+        confirmacaoExclusao = sc.nextLine().toUpperCase().trim();
+
+        switch (confirmacaoExclusao) {
+
+            case "N":
+                System.out.println("Solicitação cancelada.");
+                break;
+            case "S":
+                fornecedorService.excluiFornecedor(excluirFornecedor);
+                System.out.println(excluirFornecedor + " Excluído com sucesso!");
+                break;
+            default:
+                System.out.println("Opção inválida!");
+                break;
+        }
+    }
+    private void deletarProduto() {
+
+        System.out.println("Informe o Produto que deseja excluir");
+        String excluirProduto = sc.nextLine();
+        var confirmacaoExclusao = "N";
+
+        System.out.println("Confirma a exclusão de " + excluirProduto + "?");
+        confirmacaoExclusao = sc.nextLine().toUpperCase().trim();
+
+        switch (confirmacaoExclusao) {
+
+            case "N":
+                System.out.println("Solicitação cancelada.");
+                break;
+            case "S":
+                produtoService.deletaProduto(excluirProduto);
+                System.out.println(excluirProduto + " Excluído com sucesso!");
+                break;
+            default:
+                System.out.println("Opção inválida!");
+                break;
+        }
+    }
 }
+
+
 
 

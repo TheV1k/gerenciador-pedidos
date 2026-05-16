@@ -20,13 +20,11 @@ import java.util.Set;
 public class PedidoService {
 
     private final ProdutoRepository repositorioProduto;
-    private final CategoriaRepository repositorioCategoria;
     private final FornecedorRepository repositorioFornecedor;
     private final PedidoRepository repositorioPedido;
 
-    public PedidoService(ProdutoRepository repositorioProduto, CategoriaRepository repositorioCategoria, FornecedorRepository repositorioFornecedor, PedidoRepository repositorioPedido) {
+    public PedidoService(ProdutoRepository repositorioProduto,  FornecedorRepository repositorioFornecedor, PedidoRepository repositorioPedido) {
         this.repositorioProduto = repositorioProduto;
-        this.repositorioCategoria = repositorioCategoria;
         this.repositorioFornecedor = repositorioFornecedor;
         this.repositorioPedido = repositorioPedido;
     }
@@ -88,7 +86,7 @@ public class PedidoService {
         return pedidos;
     }
 
-    public List<Pedido> pedidosFeitosAntesDeUmaData(LocalDate data) {
+    public List<Pedido>pedidosFeitosAntesDeUmaData(LocalDate data) {
 
         List<Pedido> pedidos =
                 repositorioPedido.findByDataBefore(data);
@@ -117,5 +115,44 @@ public class PedidoService {
         pedidos.forEach(System.out::println);
 
         return pedidos;
+    }
+
+    //Edita pedido
+    public Pedido editarDataPedido(Long idPedido, LocalDate novaData){
+
+       Optional<Pedido> pedidoOptional = repositorioPedido.findById(idPedido);
+
+       LocalDate dataEntrega = null;
+
+       if(pedidoOptional.isPresent()){
+
+           Pedido pedido = pedidoOptional
+                   .get();
+
+
+           pedido.setData(novaData);
+
+           return repositorioPedido.save(pedido);
+
+       }
+return null;
+
+    }
+
+    //Deleta pedido
+    public Pedido deletarPedido (long idPedido){
+
+
+        Optional<Pedido> pedidoOptional = repositorioPedido.findById(idPedido);
+
+        if (pedidoOptional.isPresent()){
+            Pedido pedido = pedidoOptional
+                    .get();
+            repositorioPedido.deleteById(idPedido);
+
+            return pedido;
+        }
+return null;
+
     }
 }

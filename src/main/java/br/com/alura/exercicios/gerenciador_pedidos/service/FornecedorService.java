@@ -1,8 +1,13 @@
 package br.com.alura.exercicios.gerenciador_pedidos.service;
 
 import br.com.alura.exercicios.gerenciador_pedidos.models.Fornecedor;
+import br.com.alura.exercicios.gerenciador_pedidos.models.Pedido;
+import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.FornecedorRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FornecedorService {
@@ -20,4 +25,21 @@ public class FornecedorService {
 
         return fornecedorCadastrado;
     }
+
+public Fornecedor excluiFornecedor(String excluirFornecedor){
+
+
+    Optional<Fornecedor> fornecedorOptional = repositorioFornecedor
+            .findByNomeIgnoreCase(excluirFornecedor);
+
+    if (fornecedorOptional.isPresent()){
+
+        Fornecedor fornecedor = fornecedorOptional.get();
+        repositorioFornecedor.delete(fornecedor);
+
+        return fornecedor;
+    }
+    return null;
+}
+
 }
