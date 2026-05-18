@@ -66,6 +66,7 @@ public class PedidoService {
         return repositorioPedido.save(pedido);
     }
 
+    //Busca pedidos sem data
     public List<Pedido> buscarPedidosSemData() {
 
         List<Pedido> pedidos =
@@ -76,6 +77,7 @@ public class PedidoService {
         return pedidos;
     }
 
+    //Busca pedidos com data
     public List<Pedido> buscarPedidosComData() {
 
         List<Pedido> pedidos =
@@ -86,6 +88,7 @@ public class PedidoService {
         return pedidos;
     }
 
+    //Busca pedidos anteriores a uma data
     public List<Pedido>pedidosFeitosAntesDeUmaData(LocalDate data) {
 
         List<Pedido> pedidos =
@@ -96,6 +99,7 @@ public class PedidoService {
         return pedidos;
     }
 
+    //Busca pedidos feitos após uma data
     public List<Pedido> pedidosFeitosDepoisDeUmaData(LocalDate data) {
 
         List<Pedido> pedidos =
@@ -106,11 +110,12 @@ public class PedidoService {
         return pedidos;
     }
 
+    //Busca pedidos feitos entre duas datas
     public List<Pedido> pedidosFeitosEntreDuasDatas(LocalDate data1,
                                                     LocalDate data2) {
 
         List<Pedido> pedidos =
-                repositorioPedido.findByDataBetween(data1, data2);
+                repositorioPedido.pedidosFeitosEntreDuasDatas(data1, data2);
 
         pedidos.forEach(System.out::println);
 

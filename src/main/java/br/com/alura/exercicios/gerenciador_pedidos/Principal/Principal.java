@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.LongFunction;
 
 @Component
 public class Principal {
@@ -52,11 +53,21 @@ public class Principal {
                     17 - Pedidos feitos entre duas datas
                     18 - Buscar os três produtos mais caros
                     19 - Cinco Produtos Mais baratos de uma categoria
-                    20 - Lista produtos por fornecedor
-                    21 - Editar data de entrega do pedido
-                    22 - Excluir pedido
-                    23 - Excluir fornecedor
-                    24 - Excluir Produto
+                    20 - Lista produtos por Fornecedor
+                    21 - Listar produtos maiores que um valor 
+                    22 - Lista os produtos por ordem de valor crescente
+                    23 - Lista os produtos por ordem de valor decrescente
+                    24 - Listar Produtos que iniciem com uma determinada letra
+                    25 - Calcular a média dos preços dos produtos
+                    26 - Buscar o preço máximo de uma categoria
+                    27 - Contar produtos das categorias
+                    28 - Filtra categoria com mais de dez produtos
+                    29 - Filtra produtos por nome ou categoria
+                    30 - Busca os cinco produtos mais caros
+                    31 - Editar data de entrega do pedido
+                    32 - Excluir pedido
+                    33 - Excluir fornecedor
+                    34 - Excluir Produto
                     0 - Sair
                     """;
             System.out.println(menu);
@@ -125,15 +136,47 @@ public class Principal {
                     listarProdutosPorFornecedor();
                     break;
                 case 21:
-                    editarDataDoPedido();
+                    listarProdutoMaiorQueUmValor();
                     break;
                 case 22:
-                    deletarPedido();
+                    listarProdutosEmOrdemCrescente();
                     break;
                 case 23:
-                    deletarFornecedor();
+                    listarProdutosEmOrdemDecrescente();
+                    break;
                 case 24:
+                    buscarProdutosQueIniciamComALetra();
+                    break;
+                case 25:
+                    calcularMediaDosPrecos();
+                    break;
+                case 26:
+                    buscaPrecoMaximoDaCategoria();
+                    break;
+                case 27:
+                    contarProdutosDeCadaCategoria();
+                    break;
+                case 28:
+                    categoriaComMaisDe10Produtos();
+                    break;
+                case 29:
+                    buscarPorProdutoOuCategoria();
+                    break;
+                case 30:
+                    buscar5MaisCaros();
+                    break;
+                case 31:
+                    editarDataDoPedido();
+                    break;
+                case 32:
+                    deletarPedido();
+                    break;
+                case 33:
+                    deletarFornecedor();
+                    break;
+                case 34:
                     deletarProduto();
+                    break;
                 case 0:
                     System.out.println("Encerrando aplicação");
                     break;
@@ -189,7 +232,11 @@ public class Principal {
         System.out.println("Digite o produto desejado: ");
         var produtoPesquisado = sc.nextLine();
 
-        produtoService.buscarProduto(produtoPesquisado);
+        var produtoEncontrado = produtoService.buscarProduto(produtoPesquisado);
+
+        System.out.println(produtoEncontrado);
+
+
 
     }
 
@@ -231,7 +278,8 @@ public class Principal {
         System.out.println("Digite a categoria desejada: ");
         var categoriaPesquisada = sc.nextLine();
 
-        categoriaService.buscarCategoria(categoriaPesquisada);
+        categoriaService.buscarCategoria(categoriaPesquisada)
+                .forEach(System.out::println);
     }
 
     private void buscarValorMaior(){
@@ -239,7 +287,9 @@ public class Principal {
         var valorPesquisado = sc.nextDouble();
         sc.nextLine();
 
-        produtoService.buscarValorMaior(valorPesquisado);
+        produtoService
+                .buscarValorMaior(valorPesquisado)
+                .forEach(System.out::println);
 
     }
 
@@ -248,45 +298,58 @@ public class Principal {
         var valorPesquisado = sc.nextDouble();
         sc.nextLine();
 
-        produtoService.buscarMenoresValores(valorPesquisado);
+        produtoService
+                .buscarMenoresValores(valorPesquisado)
+                .forEach(System.out::println);
 
     }
 
     private void buscarParteDoNome(){
         System.out.println("Digite o produto desejado: ");
         var produtoPesquisado = sc.nextLine();
-        produtoService.buscarParteDoNome(produtoPesquisado);
+       List<Produto> produtosEncontrados = produtoService
+                .buscarParteDoNome(produtoPesquisado);
+
+        System.out.println("Produtos encontrados: ");
+        produtosEncontrados.forEach(System.out::println);
     }
+
+
 
     private void buscarpedidosSemData(){
 
-       pedidoService.buscarPedidosSemData();
+       pedidoService.buscarPedidosSemData().forEach(System.out::println);
 
     }
 
     private void buscarpedidosComData(){
 
-       pedidoService.buscarPedidosComData();
+       pedidoService.buscarPedidosComData()
+               .forEach(System.out::println);
 
     }
 
     private void listarPorMaiorValor() {
         System.out.println("Digite a categoria desejada: ");
         var categoriaPesquisada = sc.nextLine();
-        produtoService.listarPorMaiorValor(categoriaPesquisada);
+        produtoService.listarPorMaiorValor(categoriaPesquisada)
+                .forEach(System.out::println);
 
     }
 
     private void listarPorMenorValor() {
         System.out.println("Digite a categoria desejada: ");
         var categoriaPesquisada = sc.nextLine();
-        produtoService.listarPorMenorValor(categoriaPesquisada);
+        produtoService.listarPorMenorValor(categoriaPesquisada)
+                .forEach(System.out::println);
     }
 
     private void contarProdutosDeUmaCategoria() {
         System.out.println("Digite a categoria que deseja contar: ");
         var categoriaContada = sc.nextLine();
-        produtoService.contarProdutosDeUmaCategoria(categoriaContada);
+       Long contagem = produtoService.contarProdutosDeUmaCategoria(categoriaContada);
+
+        System.out.printf("A categoria %s contém %d produtos.\n", categoriaContada, contagem);
 
     }
 
@@ -297,7 +360,7 @@ public class Principal {
         var pesquisaData = sc.nextLine();
         LocalDate data = LocalDate.parse(pesquisaData, formatter);
 
-        pedidoService.pedidosFeitosAntesDeUmaData(data);
+        pedidoService.pedidosFeitosAntesDeUmaData(data).forEach(System.out::println);
     }
 
     private void pedidosFeitosDepoisDeUmaData() {
@@ -305,7 +368,7 @@ public class Principal {
         System.out.println("Digite a data a ser pesquisada: ");
         var pesquisaData = sc.nextLine();
         LocalDate data = LocalDate.parse(pesquisaData, formatter);
-        pedidoService.pedidosFeitosDepoisDeUmaData(data);
+        pedidoService.pedidosFeitosDepoisDeUmaData(data).forEach(System.out::println);
     }
 
     private void pedidosFeitosEntreDuasDatas() {
@@ -316,18 +379,18 @@ public class Principal {
         System.out.println("Digite a data final: ");
         pesquisaData = sc.nextLine();
         LocalDate data2 = LocalDate.parse(pesquisaData, formatter);
-        pedidoService.pedidosFeitosEntreDuasDatas(data1, data2);
+        pedidoService.pedidosFeitosEntreDuasDatas(data1, data2).forEach(System.out::println);
     }
 
     private void tresProdutosMaisCaros() {
-        produtoService.tresProdutosMaisCaros();
+        produtoService.tresProdutosMaisCaros().forEach(System.out::println);
     }
 
     private void cincoProdutosMaisBaratosDeUmaCategoria() {
 
         System.out.println("Digite a categoria desejada: ");
         var categoriaPesquisada = sc.nextLine();
-        produtoService.cincoProdutosMaisBaratosDeUmaCategoria(categoriaPesquisada);
+        produtoService.cincoProdutosMaisBaratosDeUmaCategoria(categoriaPesquisada).forEach(System.out::println);
     }
 
     private void listarProdutosPorFornecedor() {
@@ -340,6 +403,91 @@ public class Principal {
 
        produtos.forEach(System.out::println);
 
+    }
+
+    private void listarProdutoMaiorQueUmValor() {
+        System.out.println("Informe o valor a ser pesquisado: ");
+        var valorPesquisado = sc.nextDouble();
+        sc.nextLine();
+        produtoService.buscaProdutoMaiorQueUmValor(valorPesquisado)
+                .forEach(System.out::println);
+
+    }
+
+    private void listarProdutosEmOrdemCrescente(){
+       produtoService
+               .produtosEmOrdemCrescente().forEach(System.out::println);
+    }
+
+    private void  listarProdutosEmOrdemDecrescente(){
+        produtoService
+                .produtosEmOrdemDerescente().forEach(System.out::println);
+    }
+
+    private void buscarProdutosQueIniciamComALetra(){
+        System.out.println("Digite a letra para buscar os produtos: ");
+        var letra = sc.nextLine();
+        produtoService.buscarProdutosPelaLetraInicial(letra)
+                .forEach(System.out::println);
+    }
+
+    private void calcularMediaDosPrecos(){
+
+        double mediaDosValores = produtoService
+                .calculaMediaDosProdutos();
+
+        System.out.printf("A média do preços dos produtos é: R$%.2f\n", mediaDosValores);
+
+    }
+
+    private void buscaPrecoMaximoDaCategoria(){
+        System.out.println("Informe a categoria a ser pesquisada: ");
+        var categoriaCalculada = sc.nextLine();
+
+               Double valorMaximo = categoriaService
+                        .valorMaximoCategoria(categoriaCalculada);
+
+                System.out.println("O valor máximo na categoria " + categoriaCalculada + " é R$" + valorMaximo);
+
+    }
+
+    private void contarProdutosDeCadaCategoria(){
+
+     List<Object[]> contagemCategoria =  categoriaService.contarProdutosCategorias();
+
+     contagemCategoria
+             .stream()
+             .toList()
+             .forEach(c -> System.out.println("Categoria: " + c[0] + " | " + "Quantidade: " + c[1]));
+
+    }
+
+    private void categoriaComMaisDe10Produtos(){
+        List<Object[]> filtraCategoria =  categoriaService
+                .categoriaMaisDeDezProdutos();
+
+        filtraCategoria.forEach(c ->{
+                    String nomeCategoria = (String) c[0];
+                    Long quantidade = (Long) c[1];;
+
+                    System.out.println("Categoria: " + nomeCategoria + " | Quantidade de produtos: " + quantidade);
+                });
+    }
+
+    private void  buscarPorProdutoOuCategoria(){
+        System.out.println("Informe o produto ou categoria a ser pesquisado: ");
+        var pesquisa = sc.nextLine();
+        List<Produto> produtosEncontrados = produtoService.buscarPorProdutoOuCategoria(pesquisa);
+
+        produtosEncontrados.forEach(System.out::println);
+    }
+
+    private void buscar5MaisCaros(){
+
+        List<Produto> cincoMaisCaros = produtoService
+                .buscarCincoMaisCaros();
+
+        cincoMaisCaros.forEach(System.out::println);
     }
 
     private void editarDataDoPedido() {

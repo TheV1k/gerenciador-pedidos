@@ -2,6 +2,7 @@ package br.com.alura.exercicios.gerenciador_pedidos.service;
 
 
 import br.com.alura.exercicios.gerenciador_pedidos.models.Categoria;
+import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.CategoriaRepository;
 import org.springframework.stereotype.Service;
 
@@ -34,5 +35,27 @@ public class CategoriaService {
                 .findByNomeContainingIgnoreCase(categoriaPesquisada);
 
         return produtoPorCategoria;
+    }
+
+    //Busca o valor máximo de uma categoria
+
+    public Double valorMaximoCategoria(String categoriaCalculada) {
+
+        return repositorioCategoria.calculaValorMaximo(categoriaCalculada);
+
+
+    }
+
+    public List<Object[]> contarProdutosCategorias() {
+
+        return repositorioCategoria.contarProdutosCategoria();
+
+
+    }
+
+    //Busca categorias com mais de dez produtos
+
+    public List<Object[]> categoriaMaisDeDezProdutos() {
+        return repositorioCategoria.categoriaMaisDeDezProdutos();
     }
 }

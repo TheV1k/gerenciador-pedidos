@@ -105,7 +105,7 @@ public class ProdutoService {
                 repositorioProduto.
                         findByNomeContainingIgnoreCase(produtoPesquisado);
 
-                        produtoLocalizado.forEach(p -> System.out.println("Produtos encontrados: \n" + p));
+
 
         return produtoLocalizado;
     }
@@ -172,4 +172,60 @@ public class ProdutoService {
         return null;
     }
 
+    //Lista produtos maiores do que determinado valor
+
+    public List<Produto> buscaProdutoMaiorQueUmValor(Double valorPesquisado) {
+
+        List<Produto> produtosMaiorValor = repositorioProduto
+                .buscaProdutoMaiorValor(valorPesquisado);
+        return produtosMaiorValor;
+
+    }
+
+    // Retorna a lista de produtos em ordem crescente
+    public List<Produto> produtosEmOrdemCrescente() {
+        List<Produto> produtoEmOrdemCrescente = repositorioProduto
+                .produtoValorCrescente();
+        return  produtoEmOrdemCrescente;
+    }
+
+    // Retorna a lista de produtos em ordem decrescente
+    public List<Produto> produtosEmOrdemDerescente() {
+        List<Produto> produtoEmOrdemDecrescente = repositorioProduto
+                .produtoValorDecrescente();
+        return  produtoEmOrdemDecrescente;
+    }
+
+    //Busca produtos pela letra inicial
+    public List<Produto> buscarProdutosPelaLetraInicial(String letra) {
+
+        List<Produto> produtoPelaInicial = repositorioProduto.produtoPelaInicial(letra);
+        return produtoPelaInicial;
+    }
+
+    //Calcula a média de valor de todos os produtos
+    public double calculaMediaDosProdutos() {
+
+        return repositorioProduto
+                .mediaDosProdutos()
+                .stream()
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0.0);
+    }
+
+    //Busca produtos por ome ou categoria
+    public List<Produto> buscarPorProdutoOuCategoria(String pesquisa) {
+
+        List<Produto> buscaNomeOuCategoria = repositorioProduto.filtraNomeOuCategoria(pesquisa);
+
+        return buscaNomeOuCategoria;
+
+    }
+
+    //Retorna os cinco produtos mais caros utilizando pesquisa nativa
+    public List<Produto> buscarCincoMaisCaros() {
+
+        return repositorioProduto.cincoProudutosMaisCaros();
+    }
 }

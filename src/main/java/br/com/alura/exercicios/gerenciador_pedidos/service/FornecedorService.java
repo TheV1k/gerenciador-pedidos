@@ -18,6 +18,7 @@ public class FornecedorService {
         this.repositorioFornecedor = repositorioFornecedor;
     }
 
+    //Cadastra fornecedor
     public Fornecedor cadastrarFornecedor(String novoFornecedor) {
 
         Fornecedor fornecedorCadastrado = new Fornecedor(novoFornecedor);
@@ -26,6 +27,7 @@ public class FornecedorService {
         return fornecedorCadastrado;
     }
 
+    //Deleta fornecedor
 public Fornecedor excluiFornecedor(String excluirFornecedor){
 
 

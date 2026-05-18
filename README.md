@@ -22,7 +22,7 @@ Sistema desenvolvido em Java com Spring Boot para gerenciamento de pedidos, prod
 - Spring Data JPA
 - Hibernate
 - Maven
-- PostgreSQL
+- MySQL
 - IntelliJ IDEA
 
 ---
@@ -45,7 +45,7 @@ src/main/java
 
 - Java 21+
 - Maven
-- PostgreSQL
+- MySQL
 
 ## Clone o repositório
 
@@ -139,7 +139,5 @@ countByCategoriasNomeContainingIgnoreCase(String categoria)
 
 
 
-[<img title="" src="https://avatars.githubusercontent.com/u/62910266?v=4" alt="Victor Moreira Ramos" style="zoom:50%;" data-align="inline">  
+[<img title="" src="https://avatars.githubusercontent.com/u/62910266?s=400&u=72acbbf419c03d21d86c57090a37f702a4ae1989&v=4" alt="Victor Moreira Ramos" style="zoom:33%;" data-align="inline">  
 **Victor Moreira Ramos**](https://github.com/TheV1k)
-
-
