@@ -1,12 +1,14 @@
 package br.com.alura.exercicios.gerenciador_pedidos.service;
 
+import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.ResourceNotFoundException;
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Fornecedor.FornecedorRequestDTO;
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Fornecedor.FornecedorResponseDTO;
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoResponseDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Fornecedor;
-import br.com.alura.exercicios.gerenciador_pedidos.models.Pedido;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.FornecedorRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,30 +20,35 @@ public class FornecedorService {
         this.repositorioFornecedor = repositorioFornecedor;
     }
 
+    private FornecedorResponseDTO toResponseDTO(Fornecedor fornecedor) {
+        return new FornecedorResponseDTO(fornecedor.getId(),
+                fornecedor.getNome(),
+                fornecedor.getCnpj(),
+                fornecedor.getEndereco(),
+                fornecedor.getEmail());
+    }
     //Cadastra fornecedor
-    public Fornecedor cadastrarFornecedor(String novoFornecedor) {
+    public FornecedorResponseDTO cadastrarFornecedor(FornecedorRequestDTO dto) {
 
-        Fornecedor fornecedorCadastrado = new Fornecedor(novoFornecedor);
-        repositorioFornecedor.save(fornecedorCadastrado);
+        Fornecedor fornecedor = new Fornecedor(dto);
 
-        return fornecedorCadastrado;
+        Fornecedor fornecedorSalvo = repositorioFornecedor.save(fornecedor);
+
+        return toResponseDTO(fornecedorSalvo);
     }
 
     //Deleta fornecedor
-public Fornecedor excluiFornecedor(String excluirFornecedor){
+    public FornecedorResponseDTO excluirFornecedor(String nomeFornecedor) {
 
+        Fornecedor fornecedor = Optional.ofNullable(
+                        repositorioFornecedor.findByNomeIgnoreCase(nomeFornecedor))
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Fornecedor não encontrado"));
 
-    Optional<Fornecedor> fornecedorOptional = repositorioFornecedor
-            .findByNomeIgnoreCase(excluirFornecedor);
-
-    if (fornecedorOptional.isPresent()){
-
-        Fornecedor fornecedor = fornecedorOptional.get();
         repositorioFornecedor.delete(fornecedor);
 
-        return fornecedor;
+        return toResponseDTO(fornecedor);
     }
-    return null;
-}
 
 }

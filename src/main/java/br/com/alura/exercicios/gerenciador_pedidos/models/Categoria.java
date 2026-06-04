@@ -17,8 +17,6 @@ public class Categoria {
     @ManyToMany(mappedBy = "categorias", fetch = FetchType.EAGER)
     private List <Produto> produtos = new ArrayList<>();
 
-
-
     public Categoria(){}
 
     public Categoria(String nome) {

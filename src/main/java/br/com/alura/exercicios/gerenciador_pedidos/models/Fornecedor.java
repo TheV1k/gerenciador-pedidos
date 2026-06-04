@@ -1,5 +1,6 @@
 package br.com.alura.exercicios.gerenciador_pedidos.models;
 
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Fornecedor.FornecedorRequestDTO;
 import jakarta.persistence.*;
 
 
@@ -11,10 +12,14 @@ public class Fornecedor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
+    private String cnpj;
+    private String endereco;
+    private String email;
+
 
 
     public Fornecedor(){}
-    public Fornecedor(String nome) {
+    public Fornecedor(FornecedorRequestDTO nome) {
         this.nome = nome;
     }
 
@@ -34,7 +39,29 @@ public class Fornecedor {
         this.nome = nome;
     }
 
+    public String getCnpj() {
+        return cnpj;
+    }
 
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     @Override
     public String toString() {

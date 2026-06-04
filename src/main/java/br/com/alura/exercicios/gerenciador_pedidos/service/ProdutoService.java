@@ -1,4 +1,9 @@
 package br.com.alura.exercicios.gerenciador_pedidos.service;
+import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.PrecoInvalidoException;
+import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.ResourceNotFoundException;
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoRequestDTO;
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoResponseDTO;
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoResumoDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Categoria;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Fornecedor;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
@@ -7,8 +12,8 @@ import br.com.alura.exercicios.gerenciador_pedidos.repository.FornecedorReposito
 import br.com.alura.exercicios.gerenciador_pedidos.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProdutoService {
@@ -24,45 +29,54 @@ public class ProdutoService {
 
     //Método para cadastro de produtos
 
-    public Produto cadastrarProduto(String nome,
-                                  Double preco,
-                                  String nomeCategoria,
-                                  String nomeFornecedor){
+    public ProdutoResponseDTO cadastrarProduto(ProdutoRequestDTO dto){
 
-        if(preco < 0){
-            throw new IllegalArgumentException("Preço não pode ser negativo");
+        if(dto.preco().compareTo(BigDecimal.ZERO) < 0){
+            throw new PrecoInvalidoException("Preço não pode ser negativo");
         }
 
         Categoria categoria = repositorioCategoria
-                .findByNomeContainingIgnoreCase(nomeCategoria)
+                .findByNomeContainingIgnoreCase(dto.nomeCategoria())
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
 
         Fornecedor fornecedor = repositorioFornecedor
-                .findByNomeContainingIgnoreCase(nomeFornecedor).stream()
+                .findByNomeContainingIgnoreCase(dto.nomeFornecedor()).stream()
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Fornecedor não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Fornecedor não encontrado"));
 
-        Produto produto = new Produto(nome, preco);
+        Produto produto = new Produto(dto.nome(), dto.preco());
 
         produto.setCategorias(List.of(categoria));
         produto.setFornecedor(fornecedor);
+        repositorioProduto.save(produto);
 
-        return repositorioProduto.save(produto);
-
+        return toResponseDTO(produto);
     }
+
+    private ProdutoResponseDTO toResponseDTO(Produto produto) {
+        return new ProdutoResponseDTO(
+                produto.getNome(),
+                produto.getPreco(),
+                produto.getCategorias().getFirst().getNome(),
+                produto.getFornecedor().getNome()
+        );
+    }
+
     //Busca produto pelo nome
 
-    public Optional<Produto> buscarProduto(String produtoPesquisado){
-        return
-        repositorioProduto.findByNomeEqualsIgnoreCase(produtoPesquisado);
+    public ProdutoResponseDTO buscarProduto(String produtoPesquisado) {
 
+        Produto produto = repositorioProduto
+                .findByNomeEqualsIgnoreCase(produtoPesquisado);
+
+        return toResponseDTO(produto);
     }
 
     //Busca os produtos com valores maiores do que o informado
 
-    public List<Produto> buscarValorMaior(Double valorPesquisado){
+    public List<ProdutoResumoDTO> buscarValorMaior(BigDecimal valorPesquisado){
 
        return
                repositorioProduto.findByPrecoGreaterThanEqual(valorPesquisado);
@@ -70,7 +84,7 @@ public class ProdutoService {
 
     //Busca valores menores do que o pesquisado
 
-    public List<Produto> buscarMenoresValores(Double valorPesquisado){
+    public List<ProdutoResumoDTO> buscarMenoresValores(BigDecimal valorPesquisado){
 
         return
          repositorioProduto.findByPrecoLessThanEqual(valorPesquisado);
@@ -79,7 +93,7 @@ public class ProdutoService {
 
     //Busca os três produtos mais caros
 
-    public List<Produto>  tresProdutosMaisCaros() {
+    public List<ProdutoResumoDTO>  tresProdutosMaisCaros() {
 
         return
                 repositorioProduto.findTop3ByOrderByPrecoDesc();
@@ -88,10 +102,10 @@ public class ProdutoService {
 
     // Busca os cinco produtos mais baratos de uma categoria
 
-    public List<Produto> cincoProdutosMaisBaratosDeUmaCategoria(String categoriaPesquisada) {
+    public List<ProdutoResumoDTO> cincoProdutosMaisBaratosDeUmaCategoria(String categoriaPesquisada) {
 
 
-        List<Produto> topCincoProdutosMaisBaratos = repositorioProduto
+        List<ProdutoResumoDTO> topCincoProdutosMaisBaratos = repositorioProduto
                 .findTop5ByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(categoriaPesquisada);
 
       return  topCincoProdutosMaisBaratos;
@@ -99,24 +113,20 @@ public class ProdutoService {
 
     //Busca produto por parte do nome
 
-    public List<Produto> buscarParteDoNome(String produtoPesquisado){
+    public List<ProdutoResumoDTO> buscarParteDoNome(String produtoPesquisado){
 
-        List<Produto> produtoLocalizado =
+        List<ProdutoResumoDTO> produtoLocalizado =
                 repositorioProduto.
                         findByNomeContainingIgnoreCase(produtoPesquisado);
-
-
 
         return produtoLocalizado;
     }
 
     //Busca os produtos de uma categoria e ordena do menor para o maior valor
-     public List<Produto> listarPorMaiorValor(String categoriaPesquisada) {
+     public List<ProdutoResumoDTO> listarPorMaiorValor(String categoriaPesquisada) {
 
-        List<Produto> produtoOrdenadoValorMaior = repositorioProduto
+        List<ProdutoResumoDTO> produtoOrdenadoValorMaior = repositorioProduto
                 .findByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(categoriaPesquisada);
-
-        produtoOrdenadoValorMaior.forEach(System.out::println);
 
         return produtoOrdenadoValorMaior;
 
@@ -125,12 +135,10 @@ public class ProdutoService {
 
     //Busca os produtos de uma categoria e ordena do maior para o menor valor
 
-    public List<Produto> listarPorMenorValor(String categoria) {
+    public List<ProdutoResumoDTO> listarPorMenorValor(String categoria) {
 
-        List<Produto> produtoOrdenadoValorMenor = repositorioProduto
+        List<ProdutoResumoDTO> produtoOrdenadoValorMenor = repositorioProduto
                 .findByCategoriasNomeContainingIgnoreCaseOrderByPrecoDesc(categoria);
-
-        produtoOrdenadoValorMenor.forEach(System.out::println);
 
         return produtoOrdenadoValorMenor;
 
@@ -150,82 +158,72 @@ public class ProdutoService {
 
     //Lista produtos por fornecedor
 
-    public List<Produto> produtosPorFornecedor(String buscarFornecedor){
+    public List<ProdutoResumoDTO> produtosPorFornecedor(String buscarFornecedor){
 
-        List<Produto> produtoPorFornecedor = repositorioProduto
+        List<ProdutoResumoDTO> produtoPorFornecedor = repositorioProduto
                 .findByFornecedorNomeContainingIgnoreCase(buscarFornecedor);
 
         return  produtoPorFornecedor;
     }
 
-    public Produto deletaProduto(String excluiProduto){
+    public void deletarProduto(Long id) {
 
-        Produto produto = repositorioProduto
-                .findByNome(excluiProduto);
-
-        if (produto != null){
-
-            repositorioProduto.delete(produto);
-
-            return produto;
+        if (!repositorioProduto.existsById(id)) {
+            throw new ResourceNotFoundException("Produto não encontrado");
         }
-        return null;
+
+        repositorioProduto.deleteById(id);
     }
 
     //Lista produtos maiores do que determinado valor
 
-    public List<Produto> buscaProdutoMaiorQueUmValor(Double valorPesquisado) {
+    public List<ProdutoResumoDTO> buscaProdutoMaiorQueUmValor(BigDecimal valorPesquisado) {
 
-        List<Produto> produtosMaiorValor = repositorioProduto
+        List<ProdutoResumoDTO> produtosMaiorValor = repositorioProduto
                 .buscaProdutoMaiorValor(valorPesquisado);
         return produtosMaiorValor;
 
     }
 
     // Retorna a lista de produtos em ordem crescente
-    public List<Produto> produtosEmOrdemCrescente() {
-        List<Produto> produtoEmOrdemCrescente = repositorioProduto
+    public List<ProdutoResumoDTO> produtosEmOrdemCrescente() {
+        List<ProdutoResumoDTO> produtoEmOrdemCrescente = repositorioProduto
                 .produtoValorCrescente();
         return  produtoEmOrdemCrescente;
     }
 
     // Retorna a lista de produtos em ordem decrescente
-    public List<Produto> produtosEmOrdemDerescente() {
-        List<Produto> produtoEmOrdemDecrescente = repositorioProduto
+    public List<ProdutoResumoDTO> produtosEmOrdemDecrescente() {
+        List<ProdutoResumoDTO> produtoEmOrdemDecrescente = repositorioProduto
                 .produtoValorDecrescente();
         return  produtoEmOrdemDecrescente;
     }
 
     //Busca produtos pela letra inicial
-    public List<Produto> buscarProdutosPelaLetraInicial(String letra) {
+    public List<ProdutoResumoDTO> buscarProdutosPelaLetraInicial(String letra) {
 
-        List<Produto> produtoPelaInicial = repositorioProduto.produtoPelaInicial(letra);
+        List<ProdutoResumoDTO> produtoPelaInicial = repositorioProduto.produtoPelaInicial(letra);
         return produtoPelaInicial;
     }
 
     //Calcula a média de valor de todos os produtos
-    public double calculaMediaDosProdutos() {
+    public BigDecimal calculaMediaDosProdutos() {
 
-        return repositorioProduto
-                .mediaDosProdutos()
-                .stream()
-                .mapToDouble(Double::doubleValue)
-                .average()
-                .orElse(0.0);
+        return repositorioProduto.mediaDosProdutos();
     }
 
     //Busca produtos por ome ou categoria
-    public List<Produto> buscarPorProdutoOuCategoria(String pesquisa) {
+    public List<ProdutoResumoDTO> buscarPorProdutoOuCategoria(String pesquisa) {
 
-        List<Produto> buscaNomeOuCategoria = repositorioProduto.filtraNomeOuCategoria(pesquisa);
+        List<ProdutoResumoDTO> buscaNomeOuCategoria = repositorioProduto.filtraNomeOuCategoria(pesquisa);
 
         return buscaNomeOuCategoria;
 
     }
 
     //Retorna os cinco produtos mais caros utilizando pesquisa nativa
-    public List<Produto> buscarCincoMaisCaros() {
+    public List<ProdutoResumoDTO> buscarCincoMaisCaros() {
 
-        return repositorioProduto.cincoProudutosMaisCaros();
+        return repositorioProduto.cincoProdutosMaisCaros();
     }
 }

@@ -1,20 +1,19 @@
 package br.com.alura.exercicios.gerenciador_pedidos.service;
 
-import br.com.alura.exercicios.gerenciador_pedidos.models.Fornecedor;
-import br.com.alura.exercicios.gerenciador_pedidos.models.Pedido;
-import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
-import br.com.alura.exercicios.gerenciador_pedidos.repository.CategoriaRepository;
+import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.ResourceNotFoundException;
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.ItemPedidoRequestDTO;
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.ItemPedidoResponseDTO;
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.PedidoRequestDTO;
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.PedidoResponseDTO;
+import br.com.alura.exercicios.gerenciador_pedidos.models.*;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.FornecedorRepository;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.PedidoRepository;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class PedidoService {
@@ -29,119 +28,133 @@ public class PedidoService {
         this.repositorioPedido = repositorioPedido;
     }
 
-    //Cadastra um novo pedido
-    public Pedido cadastrarPedido(String nomeFornecedor,
-                                  String informarData,
-                                  List<String> nomesProdutos) {
 
-        DateTimeFormatter formatter =
-                DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private PedidoResponseDTO toResponseDTO(Pedido pedido) {
+
+        List<ItemPedidoResponseDTO> itens = pedido.getItens()
+                .stream()
+                .map(item -> new ItemPedidoResponseDTO(
+                        item.getProduto().getNome(),
+                        item.getQuantidade(),
+                        item.getPrecoUnitario()
+                ))
+                .toList();
+
+        return new PedidoResponseDTO(
+                pedido.getDataPedido(),
+                pedido.getDataEntrega(),
+                pedido.getStatusPedido(),
+                pedido.getTotalPedido(),
+                itens
+        );
+    }
+
+    //Cadastra um novo pedido
+    public PedidoResponseDTO cadastrarPedido(PedidoRequestDTO dto) {
 
         Fornecedor fornecedor = repositorioFornecedor
-                .findFirstByNomeContainingIgnoreCase(nomeFornecedor)
-                .orElseThrow(() ->
-                        new RuntimeException("Fornecedor não encontrado"));
-
-        LocalDate dataEntrega = null;
-
-        if (informarData != null && !informarData.isBlank()) {
-            dataEntrega = LocalDate.parse(informarData, formatter);
-        }
-
-        Set<Produto> produtosPedido = new HashSet<>();
-
-        for (String nomeProduto : nomesProdutos) {
-
-            Produto produto = repositorioProduto
-                    .findByNomeIgnoreCase(nomeProduto);
-
-            produtosPedido.add(produto);
-        }
+                .findFirstByNomeContainingIgnoreCase(dto.nomeFornecedor());
 
         Pedido pedido = new Pedido();
         pedido.setFornecedor(fornecedor);
-        pedido.setData(dataEntrega);
-        pedido.setProdutos(produtosPedido);
+        pedido.setDataPedido(dto.dataPedido());
+        pedido.setDataEntrega(dto.dataEntrega());
+        pedido.setStatusPedido(Status.ENVIADO);
 
-        return repositorioPedido.save(pedido);
+        List<ItemPedido> itens = new ArrayList<>();
+        BigDecimal totalPedido = BigDecimal.ZERO;
+
+        for (ItemPedidoRequestDTO dtoItem : dto.itemPedido()) {
+
+            Produto produto = Optional.ofNullable(
+                            repositorioProduto.findByNomeIgnoreCase(dtoItem.produto()))
+                    .orElseThrow(() ->
+                            new ResourceNotFoundException(
+                                    "Produto não encontrado: "
+                                            + dtoItem.produto()));
+
+            ItemPedido item = new ItemPedido();
+            item.setPedido(pedido);
+            item.setProduto(produto);
+            item.setQuantidade(dtoItem.quantidade());
+            item.setPrecoUnitario(produto.getPreco());
+
+            BigDecimal subtotal = produto.getPreco()
+                    .multiply(BigDecimal.valueOf(dtoItem.quantidade()));
+
+            totalPedido = totalPedido.add(subtotal);
+
+            itens.add(item);
+        }
+
+        pedido.setItens(itens);
+        pedido.setTotalPedido(totalPedido);
+
+        Pedido pedidoSalvo = repositorioPedido.save(pedido);
+
+        return toResponseDTO(pedidoSalvo);
     }
 
     //Busca pedidos sem data
-    public List<Pedido> buscarPedidosSemData() {
+    public List<PedidoResponseDTO> buscarPedidosSemData() {
 
-        List<Pedido> pedidos =
+        List<PedidoResponseDTO> pedidos =
                 repositorioPedido.findByDataIsNull();
-
-        pedidos.forEach(System.out::println);
 
         return pedidos;
     }
 
     //Busca pedidos com data
-    public List<Pedido> buscarPedidosComData() {
+    public List<PedidoResponseDTO> buscarPedidosComData() {
 
-        List<Pedido> pedidos =
+        List<PedidoResponseDTO> pedidos =
                 repositorioPedido.findByDataIsNotNull();
-
-        pedidos.forEach(System.out::println);
 
         return pedidos;
     }
 
     //Busca pedidos anteriores a uma data
-    public List<Pedido>pedidosFeitosAntesDeUmaData(LocalDate data) {
+    public List<PedidoResponseDTO>pedidosFeitosAntesDeUmaData(LocalDate data) {
 
-        List<Pedido> pedidos =
+        List<PedidoResponseDTO> pedidos =
                 repositorioPedido.findByDataBefore(data);
-
-        pedidos.forEach(System.out::println);
 
         return pedidos;
     }
 
     //Busca pedidos feitos após uma data
-    public List<Pedido> pedidosFeitosDepoisDeUmaData(LocalDate data) {
+    public List<PedidoResponseDTO> pedidosFeitosDepoisDeUmaData(LocalDate data) {
 
-        List<Pedido> pedidos =
+        List<PedidoResponseDTO> pedidos =
                 repositorioPedido.findByDataAfter(data);
-
-        pedidos.forEach(System.out::println);
 
         return pedidos;
     }
 
     //Busca pedidos feitos entre duas datas
-    public List<Pedido> pedidosFeitosEntreDuasDatas(LocalDate data1,
+    public List<PedidoResponseDTO> pedidosFeitosEntreDuasDatas(LocalDate data1,
                                                     LocalDate data2) {
 
-        List<Pedido> pedidos =
+        List<PedidoResponseDTO> pedidos =
                 repositorioPedido.pedidosFeitosEntreDuasDatas(data1, data2);
-
-        pedidos.forEach(System.out::println);
 
         return pedidos;
     }
 
     //Edita pedido
-    public Pedido editarDataPedido(Long idPedido, LocalDate novaData){
+    public PedidoResponseDTO editarDataEntrega(Long idPedido,
+                                               LocalDate novaData) {
 
-       Optional<Pedido> pedidoOptional = repositorioPedido.findById(idPedido);
+        Pedido pedido = repositorioPedido.findById(idPedido)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Pedido não encontrado"));
 
-       LocalDate dataEntrega = null;
+        pedido.setDataEntrega(novaData);
 
-       if(pedidoOptional.isPresent()){
+        Pedido pedidoAtualizado = repositorioPedido.save(pedido);
 
-           Pedido pedido = pedidoOptional
-                   .get();
-
-
-           pedido.setData(novaData);
-
-           return repositorioPedido.save(pedido);
-
-       }
-return null;
-
+        return toResponseDTO(pedidoAtualizado);
     }
 
     //Deleta pedido

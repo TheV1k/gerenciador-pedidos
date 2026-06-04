@@ -2,6 +2,7 @@ package br.com.alura.exercicios.gerenciador_pedidos.models;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +18,7 @@ public class Produto {
     @Column(name = "nome", unique = true)
     private String nome;
     @Column(name = "valor")
-    private Double preco;
+    private BigDecimal preco;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fornecedor_id")
@@ -40,10 +41,12 @@ public class Produto {
     }
 
     public  Produto(){}
-    public Produto(String nome, Double preco) {
+
+    public Produto(String nome, BigDecimal preco) {
         this.nome = nome;
         this.preco = preco;
     }
+
 
     public Long getId() {
         return id;
@@ -61,11 +64,11 @@ public class Produto {
         this.nome = nome;
     }
 
-    public Double getPreco() {
+    public BigDecimal getPreco() {
         return preco;
     }
 
-    public void setPreco(Double preco) {
+    public void setPreco(BigDecimal preco) {
         this.preco = preco;
     }
 

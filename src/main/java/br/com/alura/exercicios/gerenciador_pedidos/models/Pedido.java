@@ -1,47 +1,38 @@
 package br.com.alura.exercicios.gerenciador_pedidos.models;
 
 import jakarta.persistence.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "pedidos")
 public class Pedido {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "data", nullable = true)
-    private LocalDate data;
+    private LocalDate dataPedido;
+    @Column(name = "data_entrega", nullable = true)
+    private LocalDate dataEntrega;
+    @Enumerated(EnumType.STRING)
+    private Status statusPedido;
+    private BigDecimal totalPedido;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "pedido_produto",
-            joinColumns = @JoinColumn(name = "pedido_id"),
-            inverseJoinColumns = @JoinColumn(name = "produto_id")
-    )
-    private Set<Produto> produtos;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fornecedor_id")
-    Fornecedor fornecedor;
+    private Fornecedor fornecedor;
 
-    public Pedido(){}
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemPedido> itens;
+
+    public Pedido() {
+    }
 
     public Pedido(Fornecedor fornecedor) {
         this.fornecedor = fornecedor;
-    }
-
-    public Pedido(Set<Produto> produtos) {
-        this.produtos = produtos;
-    }
-
-    public Pedido(LocalDate data) {
-
-        this.data = data;
     }
 
     public Long getId() {
@@ -52,15 +43,37 @@ public class Pedido {
         this.id = id;
     }
 
-    public LocalDate getData() {
-        return data;
+    public LocalDate getDataPedido() {
+        return dataPedido;
     }
 
-    public void setData(LocalDate data) {
-        this.data = data;
+    public void setDataPedido(LocalDate dataPedido) {
+        this.dataPedido = dataPedido;
     }
 
+    public LocalDate getDataEntrega() {
+        return dataEntrega;
+    }
 
+    public void setDataEntrega(LocalDate dataEntrega) {
+        this.dataEntrega = dataEntrega;
+    }
+
+    public Status getStatusPedido() {
+        return statusPedido;
+    }
+
+    public void setStatusPedido(Status statusPedido) {
+        this.statusPedido = statusPedido;
+    }
+
+    public BigDecimal getTotalPedido() {
+        return totalPedido;
+    }
+
+    public void setTotalPedido(BigDecimal totalPedido) {
+        this.totalPedido = totalPedido;
+    }
 
     public Fornecedor getFornecedor() {
         return fornecedor;
@@ -70,19 +83,19 @@ public class Pedido {
         this.fornecedor = fornecedor;
     }
 
-    public Set<Produto> getProdutos() {
-        return produtos;
+    public List<ItemPedido> getItens() {
+        return itens;
     }
 
-    public void setProdutos(Set<Produto> produtos) {
-        this.produtos = produtos;
+    public void setItens(List<ItemPedido> itens) {
+        this.itens = itens;
     }
 
-    @Override
-    public String toString() {
-        return "Fornecedor:" + fornecedor +
-                "Id: " + id +
-                "Data: " + data +
-                "Produtos: " + produtos;
+    @PrePersist
+    public void prePersist() {
+        if (dataPedido == null){
+            dataPedido = LocalDate.now();
+        }
+
     }
 }
