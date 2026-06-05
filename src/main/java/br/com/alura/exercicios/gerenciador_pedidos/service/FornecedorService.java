@@ -3,6 +3,7 @@ package br.com.alura.exercicios.gerenciador_pedidos.service;
 import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.ResourceNotFoundException;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Fornecedor.FornecedorRequestDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Fornecedor.FornecedorResponseDTO;
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Fornecedor.FornecedorResumoDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoResponseDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Fornecedor;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
@@ -27,10 +28,24 @@ public class FornecedorService {
                 fornecedor.getEndereco(),
                 fornecedor.getEmail());
     }
+
+    private FornecedorResumoDTO converteResumoDTO(Fornecedor fornecedor){
+
+        return new FornecedorResumoDTO(fornecedor.getNome(),
+                fornecedor.getCnpj(),
+                fornecedor.getEndereco(),
+                fornecedor.getEmail());
+    }
     //Cadastra fornecedor
     public FornecedorResponseDTO cadastrarFornecedor(FornecedorRequestDTO dto) {
 
-        Fornecedor fornecedor = new Fornecedor(dto);
+
+        Fornecedor fornecedor = new Fornecedor();
+
+        fornecedor.setNome(dto.nome());
+        fornecedor.setCnpj(dto.cnpj());
+        fornecedor.setEndereco(dto.endereco());
+        fornecedor.setEmail(dto.email());
 
         Fornecedor fornecedorSalvo = repositorioFornecedor.save(fornecedor);
 
@@ -38,17 +53,20 @@ public class FornecedorService {
     }
 
     //Deleta fornecedor
-    public FornecedorResponseDTO excluirFornecedor(String nomeFornecedor) {
+    public void excluirFornecedor(Long id) {
 
-        Fornecedor fornecedor = Optional.ofNullable(
-                        repositorioFornecedor.findByNomeIgnoreCase(nomeFornecedor))
+        Fornecedor fornecedor = repositorioFornecedor.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Fornecedor não encontrado"));
+                        new ResourceNotFoundException("Fornecedor não encontrado"));
 
         repositorioFornecedor.delete(fornecedor);
-
-        return toResponseDTO(fornecedor);
     }
 
+    //buscar Fornecedor por ID
+    public FornecedorResumoDTO buscarFornecedorPorId(Long id) {
+        Fornecedor fornecedor = repositorioFornecedor.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Fornecedor não encontrado"));
+
+        return converteResumoDTO(fornecedor);
+    }
 }

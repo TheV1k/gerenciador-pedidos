@@ -1,11 +1,13 @@
 package br.com.alura.exercicios.gerenciador_pedidos.service;
 
 
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaRequestDTO;
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaResponseDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Categoria;
-import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.CategoriaRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -20,18 +22,20 @@ public class CategoriaService {
 
     //Cadastra Categoria
 
-    public void cadastrarCategoria(String nomeCategoria){
-        Categoria categoria = new Categoria();
-        categoria.setNome(nomeCategoria);
+    public CategoriaResponseDTO cadastrarCategoria(CategoriaRequestDTO dto){
+        Categoria categoria = new Categoria(dto.nome());
 
         repositorioCategoria.save(categoria);
+
+        return toResponse(categoria);
+
     }
 
     //Retorna os produtos cadastrados por categoria
 
-    public List<Categoria> buscarCategoria(String categoriaPesquisada){
+    public List<CategoriaResponseDTO> buscarCategoria(String categoriaPesquisada){
 
-        List<Categoria> produtoPorCategoria = repositorioCategoria
+        List<CategoriaResponseDTO> produtoPorCategoria = repositorioCategoria
                 .findByNomeContainingIgnoreCase(categoriaPesquisada);
 
         return produtoPorCategoria;
@@ -39,14 +43,14 @@ public class CategoriaService {
 
     //Busca o valor máximo de uma categoria
 
-    public Double valorMaximoCategoria(String categoriaCalculada) {
+    public BigDecimal valorMaximoCategoria(String categoriaCalculada) {
 
         return repositorioCategoria.calculaValorMaximo(categoriaCalculada);
 
 
     }
 
-    public List<Object[]> contarProdutosCategorias() {
+    public List<CategoriaResponseDTO> contarProdutosCategorias() {
 
         return repositorioCategoria.contarProdutosCategoria();
 
@@ -55,7 +59,12 @@ public class CategoriaService {
 
     //Busca categorias com mais de dez produtos
 
-    public List<Object[]> categoriaMaisDeDezProdutos() {
+    public List<CategoriaResponseDTO> categoriaMaisDeDezProdutos() {
         return repositorioCategoria.categoriaMaisDeDezProdutos();
+    }
+
+    private CategoriaResponseDTO toResponse(Categoria categoria){
+        return new CategoriaResponseDTO(categoria.getId(),
+                categoria.getNome());
     }
 }

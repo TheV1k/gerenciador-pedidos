@@ -99,7 +99,7 @@ public class PedidoService {
     public List<PedidoResponseDTO> buscarPedidosSemData() {
 
         List<PedidoResponseDTO> pedidos =
-                repositorioPedido.findByDataIsNull();
+                repositorioPedido.findByDataEntregaIsNull();
 
         return pedidos;
     }
@@ -108,7 +108,7 @@ public class PedidoService {
     public List<PedidoResponseDTO> buscarPedidosComData() {
 
         List<PedidoResponseDTO> pedidos =
-                repositorioPedido.findByDataIsNotNull();
+                repositorioPedido.findByDataEntregaIsNotNull();
 
         return pedidos;
     }
@@ -117,7 +117,7 @@ public class PedidoService {
     public List<PedidoResponseDTO>pedidosFeitosAntesDeUmaData(LocalDate data) {
 
         List<PedidoResponseDTO> pedidos =
-                repositorioPedido.findByDataBefore(data);
+                repositorioPedido.findByDataEntregaBefore(data);
 
         return pedidos;
     }
@@ -126,17 +126,17 @@ public class PedidoService {
     public List<PedidoResponseDTO> pedidosFeitosDepoisDeUmaData(LocalDate data) {
 
         List<PedidoResponseDTO> pedidos =
-                repositorioPedido.findByDataAfter(data);
+                repositorioPedido.findByDataPedidoAfter(data);
 
         return pedidos;
     }
 
     //Busca pedidos feitos entre duas datas
-    public List<PedidoResponseDTO> pedidosFeitosEntreDuasDatas(LocalDate data1,
-                                                    LocalDate data2) {
+    public List<PedidoResponseDTO> pedidosFeitosEntreDuasDatas(LocalDate dataInicial,
+                                                    LocalDate dataFinal) {
 
         List<PedidoResponseDTO> pedidos =
-                repositorioPedido.pedidosFeitosEntreDuasDatas(data1, data2);
+                repositorioPedido.pedidosFeitosEntreDuasDatas(dataInicial, dataFinal);
 
         return pedidos;
     }

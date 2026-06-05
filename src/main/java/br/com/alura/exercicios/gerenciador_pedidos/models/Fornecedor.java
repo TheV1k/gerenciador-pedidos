@@ -19,9 +19,7 @@ public class Fornecedor {
 
 
     public Fornecedor(){}
-    public Fornecedor(FornecedorRequestDTO nome) {
-        this.nome = nome;
-    }
+
 
     public Long getId() {
         return id;

@@ -36,7 +36,7 @@ public class ProdutoService {
         }
 
         Categoria categoria = repositorioCategoria
-                .findByNomeContainingIgnoreCase(dto.nomeCategoria())
+                .findAllByNomeContainingIgnoreCase(dto.nomeCategoria())
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
@@ -55,11 +55,12 @@ public class ProdutoService {
         return toResponseDTO(produto);
     }
 
+    //Converte para ResponseDTO
     private ProdutoResponseDTO toResponseDTO(Produto produto) {
         return new ProdutoResponseDTO(
                 produto.getNome(),
                 produto.getPreco(),
-                produto.getCategorias().getFirst().getNome(),
+                produto.getCategorias().get(0).getNome(),
                 produto.getFornecedor().getNome()
         );
     }
@@ -123,7 +124,7 @@ public class ProdutoService {
     }
 
     //Busca os produtos de uma categoria e ordena do menor para o maior valor
-     public List<ProdutoResumoDTO> listarPorMaiorValor(String categoriaPesquisada) {
+     public List<ProdutoResumoDTO> ordenaDoMenorParaOMaior (String categoriaPesquisada) {
 
         List<ProdutoResumoDTO> produtoOrdenadoValorMaior = repositorioProduto
                 .findByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(categoriaPesquisada);
@@ -135,7 +136,7 @@ public class ProdutoService {
 
     //Busca os produtos de uma categoria e ordena do maior para o menor valor
 
-    public List<ProdutoResumoDTO> listarPorMenorValor(String categoria) {
+    public List<ProdutoResumoDTO> ordenaDoMaiorParaOMenor(String categoria) {
 
         List<ProdutoResumoDTO> produtoOrdenadoValorMenor = repositorioProduto
                 .findByCategoriasNomeContainingIgnoreCaseOrderByPrecoDesc(categoria);
@@ -144,17 +145,6 @@ public class ProdutoService {
 
     }
 
-    //Conta os produtos de uma categoria
-
-    public Long contarProdutosDeUmaCategoria(String categoriaContada) {
-
-        Long contaCategoria = repositorioProduto
-                .countByCategoriasNomeContainingIgnoreCase(categoriaContada);
-
-        return contaCategoria;
-
-
-    }
 
     //Lista produtos por fornecedor
 
@@ -166,14 +156,7 @@ public class ProdutoService {
         return  produtoPorFornecedor;
     }
 
-    public void deletarProduto(Long id) {
 
-        if (!repositorioProduto.existsById(id)) {
-            throw new ResourceNotFoundException("Produto não encontrado");
-        }
-
-        repositorioProduto.deleteById(id);
-    }
 
     //Lista produtos maiores do que determinado valor
 
@@ -206,13 +189,8 @@ public class ProdutoService {
         return produtoPelaInicial;
     }
 
-    //Calcula a média de valor de todos os produtos
-    public BigDecimal calculaMediaDosProdutos() {
 
-        return repositorioProduto.mediaDosProdutos();
-    }
-
-    //Busca produtos por ome ou categoria
+    //Busca produtos por nome ou categoria
     public List<ProdutoResumoDTO> buscarPorProdutoOuCategoria(String pesquisa) {
 
         List<ProdutoResumoDTO> buscaNomeOuCategoria = repositorioProduto.filtraNomeOuCategoria(pesquisa);
@@ -225,5 +203,22 @@ public class ProdutoService {
     public List<ProdutoResumoDTO> buscarCincoMaisCaros() {
 
         return repositorioProduto.cincoProdutosMaisCaros();
+    }
+
+    public ProdutoResponseDTO buscarProdutoPorId(Long id) {
+
+        Produto produto = repositorioProduto.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado."));
+
+        return toResponseDTO(produto);
+    }
+
+    public void deletarProduto(Long id) {
+
+        if (!repositorioProduto.existsById(id)) {
+            throw new ResourceNotFoundException("Produto não encontrado");
+        }
+
+        repositorioProduto.deleteById(id);
     }
 }

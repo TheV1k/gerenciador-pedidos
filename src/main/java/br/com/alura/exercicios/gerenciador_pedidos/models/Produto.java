@@ -24,9 +24,6 @@ public class Produto {
     @JoinColumn(name = "fornecedor_id")
     Fornecedor fornecedor;
 
-    @ManyToMany(mappedBy = "produtos")
-    private Set<Pedido> pedidos;
-
     @ManyToMany
     @JoinTable(
             name = "produto_categoria",
@@ -86,14 +83,6 @@ public class Produto {
 
     public void setFornecedor(Fornecedor fornecedor) {
         this.fornecedor = fornecedor;
-    }
-
-    public Set<Pedido> getPedidos() {
-        return pedidos;
-    }
-
-    public void setPedidos(Set<Pedido> pedidos) {
-        this.pedidos = pedidos;
     }
 
 
