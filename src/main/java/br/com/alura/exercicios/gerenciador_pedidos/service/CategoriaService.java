@@ -1,8 +1,10 @@
 package br.com.alura.exercicios.gerenciador_pedidos.service;
 
 
+import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.ResourceNotFoundException;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaRequestDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaResponseDTO;
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaResumoDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Categoria;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.CategoriaRepository;
 import org.springframework.stereotype.Service;
@@ -33,38 +35,43 @@ public class CategoriaService {
 
     //Retorna os produtos cadastrados por categoria
 
-    public List<CategoriaResponseDTO> buscarCategoria(String categoriaPesquisada){
+    public List<CategoriaResumoDTO> buscarCategoria(String categoria){
 
-        List<CategoriaResponseDTO> produtoPorCategoria = repositorioCategoria
-                .findByNomeContainingIgnoreCase(categoriaPesquisada);
+        List<CategoriaResumoDTO> produtoPorCategoria = repositorioCategoria
+                .findByNomeContainingIgnoreCase(categoria);
 
         return produtoPorCategoria;
     }
 
-    //Busca o valor máximo de uma categoria
+    //Conta os produtos de uma categoria
 
-    public BigDecimal valorMaximoCategoria(String categoriaCalculada) {
-
-        return repositorioCategoria.calculaValorMaximo(categoriaCalculada);
-
-
-    }
-
-    public List<CategoriaResponseDTO> contarProdutosCategorias() {
+    public List<CategoriaResumoDTO> contarProdutosCategorias() {
 
         return repositorioCategoria.contarProdutosCategoria();
 
 
     }
 
-    //Busca categorias com mais de dez produtos
-
-    public List<CategoriaResponseDTO> categoriaMaisDeDezProdutos() {
-        return repositorioCategoria.categoriaMaisDeDezProdutos();
-    }
 
     private CategoriaResponseDTO toResponse(Categoria categoria){
         return new CategoriaResponseDTO(categoria.getId(),
                 categoria.getNome());
+    }
+
+    public CategoriaResponseDTO buscarCategoriaPorId(Long id) {
+       Categoria  categoria = repositorioCategoria.findById(id)
+               .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
+
+       return toResponse(categoria);
+
+    }
+
+    public void excluircategoria(Long id) {
+
+        Categoria categoria =  repositorioCategoria.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Fornecedor não encontrado"));
+
+        repositorioCategoria.delete(categoria);
     }
 }

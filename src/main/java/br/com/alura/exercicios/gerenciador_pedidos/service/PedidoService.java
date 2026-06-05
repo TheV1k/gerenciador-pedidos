@@ -1,5 +1,6 @@
 package br.com.alura.exercicios.gerenciador_pedidos.service;
 
+import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.BusinessRuleException;
 import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.ResourceNotFoundException;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.ItemPedidoRequestDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.ItemPedidoResponseDTO;
@@ -45,8 +46,7 @@ public class PedidoService {
                 pedido.getDataEntrega(),
                 pedido.getStatusPedido(),
                 pedido.getTotalPedido(),
-                itens
-        );
+                itens        );
     }
 
     //Cadastra um novo pedido
@@ -58,7 +58,6 @@ public class PedidoService {
         Pedido pedido = new Pedido();
         pedido.setFornecedor(fornecedor);
         pedido.setDataPedido(dto.dataPedido());
-        pedido.setDataEntrega(dto.dataEntrega());
         pedido.setStatusPedido(Status.ENVIADO);
 
         List<ItemPedido> itens = new ArrayList<>();
@@ -95,7 +94,7 @@ public class PedidoService {
         return toResponseDTO(pedidoSalvo);
     }
 
-    //Busca pedidos sem data
+    //Busca pedidos sem data de entrega
     public List<PedidoResponseDTO> buscarPedidosSemData() {
 
         List<PedidoResponseDTO> pedidos =
@@ -104,8 +103,8 @@ public class PedidoService {
         return pedidos;
     }
 
-    //Busca pedidos com data
-    public List<PedidoResponseDTO> buscarPedidosComData() {
+    //Busca pedidos entregue
+    public List<PedidoResponseDTO> buscarPedidosEntregue() {
 
         List<PedidoResponseDTO> pedidos =
                 repositorioPedido.findByDataEntregaIsNotNull();
@@ -113,8 +112,17 @@ public class PedidoService {
         return pedidos;
     }
 
-    //Busca pedidos anteriores a uma data
+    //Busca pedidos realizados antes de uma data
     public List<PedidoResponseDTO>pedidosFeitosAntesDeUmaData(LocalDate data) {
+
+        List<PedidoResponseDTO> pedidos =
+                repositorioPedido.findByDataPedidoBefore(data);
+
+        return pedidos;
+    }
+
+    //Busca pedidos entregues antes de uma data
+    public List<PedidoResponseDTO>pedidosEntreguesAntesDeUmaData(LocalDate data) {
 
         List<PedidoResponseDTO> pedidos =
                 repositorioPedido.findByDataEntregaBefore(data);
@@ -131,6 +139,15 @@ public class PedidoService {
         return pedidos;
     }
 
+    //Busca pedidos Entregue após uma data
+    public List<PedidoResponseDTO> pedidosEntregueDepoisDeUmaData(LocalDate data) {
+
+        List<PedidoResponseDTO> pedidos =
+                repositorioPedido.findByDataEntregaAfter(data);
+
+        return pedidos;
+    }
+
     //Busca pedidos feitos entre duas datas
     public List<PedidoResponseDTO> pedidosFeitosEntreDuasDatas(LocalDate dataInicial,
                                                     LocalDate dataFinal) {
@@ -141,16 +158,36 @@ public class PedidoService {
         return pedidos;
     }
 
-    //Edita pedido
-    public PedidoResponseDTO editarDataEntrega(Long idPedido,
-                                               LocalDate novaData) {
+    //Busca pedidos feitos entre duas datas
+    public List<PedidoResponseDTO> pedidosEntreguesEntreDuasDatas(LocalDate dataInicial,
+                                                               LocalDate dataFinal) {
+
+        List<PedidoResponseDTO> pedidos =
+                repositorioPedido.pedidosEntreguesEntreDuasDatas(dataInicial, dataFinal);
+
+        return pedidos;
+    }
+
+    //Receber o pedido
+    public PedidoResponseDTO receberPedido(Long idPedido,
+                                               LocalDate dataEntrega) {
 
         Pedido pedido = repositorioPedido.findById(idPedido)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Pedido não encontrado"));
 
-        pedido.setDataEntrega(novaData);
+        if(dataEntrega.isAfter(LocalDate.now())){
+            throw new BusinessRuleException("Data de entrega não pode ser posterior a data atual!");
+        }
+
+        if (pedido.getStatusPedido() == Status.ENTREGUE) {
+            throw new BusinessRuleException(
+                    "Este pedido já foi recebido.");
+        }
+
+        pedido.setDataEntrega(dataEntrega);
+        pedido.setStatusPedido(Status.ENTREGUE);
 
         Pedido pedidoAtualizado = repositorioPedido.save(pedido);
 
@@ -172,5 +209,13 @@ public class PedidoService {
         }
 return null;
 
+    }
+
+    public List<PedidoResponseDTO> buscarPedidoPorId(Long id){
+
+        Pedido pedido = repositorioPedido.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado"));
+
+        return List.of(toResponseDTO(pedido));
     }
 }

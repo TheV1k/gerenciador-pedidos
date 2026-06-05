@@ -25,9 +25,21 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     List<PedidoResponseDTO> pedidosFeitosEntreDuasDatas(@Param("dataInicial") LocalDate dataInicial,
                                                         @Param("dataFinal")  LocalDate dataFinal);
 
+    @Query("""
+    SELECT p
+    FROM Pedido p
+    WHERE p.dataEntrega BETWEEN :dataInicial AND :dataFinal
+""")
+    List<PedidoResponseDTO> pedidosEntreguesEntreDuasDatas(@Param("dataInicial") LocalDate dataInicial,
+                                                        @Param("dataFinal")  LocalDate dataFinal);
+
+
     List<PedidoResponseDTO> findByDataPedidoAfter(LocalDate data);
 
     List<PedidoResponseDTO> findByDataEntregaBefore(LocalDate data);
 
 
+    List<PedidoResponseDTO> findByDataPedidoBefore(LocalDate data);
+
+    List<PedidoResponseDTO> findByDataEntregaAfter(LocalDate data);
 }
