@@ -22,11 +22,13 @@ public class PedidoService {
     private final ProdutoRepository repositorioProduto;
     private final FornecedorRepository repositorioFornecedor;
     private final PedidoRepository repositorioPedido;
+    private final PdfService pdfService;
 
-    public PedidoService(ProdutoRepository repositorioProduto,  FornecedorRepository repositorioFornecedor, PedidoRepository repositorioPedido) {
+    public PedidoService(ProdutoRepository repositorioProduto, FornecedorRepository repositorioFornecedor, PedidoRepository repositorioPedido, PdfService pdfService) {
         this.repositorioProduto = repositorioProduto;
         this.repositorioFornecedor = repositorioFornecedor;
         this.repositorioPedido = repositorioPedido;
+        this.pdfService = pdfService;
     }
 
 
@@ -34,21 +36,33 @@ public class PedidoService {
 
         List<ItemPedidoResponseDTO> itens = pedido.getItens()
                 .stream()
-                .map(item -> new ItemPedidoResponseDTO(
-                        item.getProduto().getNome(),
-                        item.getQuantidade(),
-                        item.getPrecoUnitario()
-                ))
+                .map(this::toDTO)
                 .toList();
 
         return new PedidoResponseDTO(
+                pedido.getId(),
                 pedido.getDataPedido(),
                 pedido.getDataEntrega(),
+                pedido.getFornecedor().getNome(),
                 pedido.getStatusPedido(),
                 pedido.getTotalPedido(),
-                itens        );
+                itens
+        );
     }
 
+    private ItemPedidoResponseDTO toDTO(ItemPedido item) {
+
+        BigDecimal subtotal =
+                item.getPrecoUnitario()
+                        .multiply(BigDecimal.valueOf(item.getQuantidade()));
+
+        return new ItemPedidoResponseDTO(
+                item.getProduto().getNome(),
+                item.getQuantidade(),
+                item.getPrecoUnitario(),
+                subtotal
+        );
+    }
     //Cadastra um novo pedido
     public PedidoResponseDTO cadastrarPedido(PedidoRequestDTO dto) {
 
@@ -209,6 +223,23 @@ public class PedidoService {
         }
 return null;
 
+    }
+
+    public byte[] gerarPdf(Long pedidoId) {
+
+        Pedido pedido =
+                repositorioPedido.findById(pedidoId)
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException(
+                                        "Pedido não encontrado"
+                                )
+                        );
+
+        PedidoResponseDTO dto =
+                toResponseDTO(pedido);
+
+        return pdfService
+                .gerarPedidoPdf(dto);
     }
 
     public List<PedidoResponseDTO> buscarPedidoPorId(Long id){

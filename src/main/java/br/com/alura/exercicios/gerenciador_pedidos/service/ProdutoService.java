@@ -55,6 +55,44 @@ public class ProdutoService {
         return toResponseDTO(produto);
     }
 
+    //Cadastra lote de produtos
+    public List<ProdutoResponseDTO> cadastrarEmLote(List<ProdutoRequestDTO> dtos) {
+
+        List<Produto> produtos = dtos.stream()
+                .map(dto -> {
+
+                    if (dto.preco().compareTo(BigDecimal.ZERO) < 0) {
+                        throw new PrecoInvalidoException("Preço não pode ser negativo");
+                    }
+
+                    Categoria categoria = repositorioCategoria
+                            .findAllByNomeContainingIgnoreCase(dto.nomeCategoria())
+                            .stream()
+                            .findFirst()
+                            .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
+
+                    Fornecedor fornecedor = repositorioFornecedor
+                            .findByNomeContainingIgnoreCase(dto.nomeFornecedor())
+                            .stream()
+                            .findFirst()
+                            .orElseThrow(() -> new ResourceNotFoundException("Fornecedor não encontrado"));
+
+                    Produto produto = new Produto(dto.nome(), dto.preco());
+
+                    produto.setCategorias(List.of(categoria));
+                    produto.setFornecedor(fornecedor);
+
+                    return produto;
+                })
+                .toList();
+
+        repositorioProduto.saveAll(produtos);
+
+        return produtos.stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
+
     //Converte para ResponseDTO
     private ProdutoResponseDTO toResponseDTO(Produto produto) {
         return new ProdutoResponseDTO(

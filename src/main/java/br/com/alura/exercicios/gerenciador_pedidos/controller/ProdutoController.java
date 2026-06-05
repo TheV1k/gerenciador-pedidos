@@ -29,6 +29,15 @@ public class ProdutoController {
                 service.cadastrarProduto(dto));
     }
 
+    //Cadastra lote de produtos
+
+    @PostMapping("/batch")
+    public List<ProdutoResponseDTO> cadastrarProdutosEmLote(
+            @RequestBody List<ProdutoRequestDTO> dtos
+    ) {
+        return service.cadastrarEmLote(dtos);
+    }
+
     //Busca produto por ID
     @GetMapping("/{id}")
     public ProdutoResponseDTO buscarProdutoPorId (@PathVariable Long id){

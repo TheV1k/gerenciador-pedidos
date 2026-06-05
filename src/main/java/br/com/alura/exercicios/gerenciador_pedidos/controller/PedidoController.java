@@ -4,6 +4,8 @@ import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.PedidoRequestDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.PedidoResponseDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,13 +79,36 @@ public class PedidoController {
         return service.pedidosFeitosEntreDuasDatas(dataInicial, dataFinal);
     }
 
-    //Busca pedidos etregues entre duas datas
-    @GetMapping("pedidos-feitos-entre")
+    //Busca pedidos entregues entre duas datas
+    @GetMapping("pedidos-entregues-entre")
     public List<PedidoResponseDTO>pedidosEntreguesEntreDuasDatas(@RequestParam LocalDate dataInicial,
                                                              @RequestParam LocalDate dataFinal){
 
         return service.pedidosEntreguesEntreDuasDatas(dataInicial, dataFinal);
     }
+
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> gerarPdf(
+            @PathVariable Long id
+    ) {
+
+        byte[] pdf =
+                service.gerarPdf(id);
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=pedido-" +
+                                id +
+                                ".pdf"
+                )
+                .contentType(
+                        MediaType.APPLICATION_PDF
+                )
+                .body(pdf);
+    }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<PedidoResponseDTO> receberPedido(@PathVariable Long id,
