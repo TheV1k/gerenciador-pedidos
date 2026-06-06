@@ -1,11 +1,14 @@
 package br.com.alura.exercicios.gerenciador_pedidos.service;
 
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Fornecedor.FornecedorResponseDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.ItemPedidoResponseDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.PedidoResponseDTO;
 import com.lowagie.text.*;
+import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 
@@ -66,36 +69,59 @@ public class PdfService {
         document.add(new Paragraph(" "));
     }
 
+    private PdfPCell criarCelulaTitulo(String texto) {
+
+        Font fonte = FontFactory.getFont(
+                FontFactory.HELVETICA_BOLD,
+                10
+        );
+
+        PdfPCell celula = new PdfPCell(
+                new Phrase(texto, fonte)
+        );
+
+        return celula;
+    }
+
     private void adicionarDadosPedido(
             Document document,
             PedidoResponseDTO pedido
     ) throws DocumentException {
 
-        document.add(
-                new Paragraph(
-                        "Pedido Nº: " + pedido.id()
-                )
+        PdfPTable tabelaCabecalho = new PdfPTable(2);
+
+        tabelaCabecalho.setWidthPercentage(100);
+        tabelaCabecalho.setWidths(new float[]{2, 5});
+
+        tabelaCabecalho.addCell(criarCelulaTitulo("Pedido Nº"));
+        tabelaCabecalho.addCell(String.valueOf(pedido.id()));
+
+        tabelaCabecalho.addCell(criarCelulaTitulo("Data da Solicitação"));
+        tabelaCabecalho.addCell(pedido.dataPedido().toString());
+
+        tabelaCabecalho.addCell(criarCelulaTitulo("Data da Entrega"));
+        tabelaCabecalho.addCell(
+                pedido.dataEntrega() != null
+                        ? pedido.dataEntrega().toString()
+                        : "Não informada"
         );
 
+        tabelaCabecalho.addCell(criarCelulaTitulo("Fornecedor"));
+        tabelaCabecalho.addCell(pedido.fornecedor().nome());
 
+        tabelaCabecalho.addCell(criarCelulaTitulo("CNPJ"));
+        tabelaCabecalho.addCell(pedido.fornecedor().cnpj());
 
-        document.add(
-                new Paragraph(
-                        "Data: " + pedido.dataPedido()
-                )
-        );
+        tabelaCabecalho.addCell(criarCelulaTitulo("Endereço"));
+        tabelaCabecalho.addCell(pedido.fornecedor().endereco());
 
-        document.add(
-                new Paragraph(
-                        "Fornecedor: " + pedido.fornecedor()
-                )
-        );
+        tabelaCabecalho.addCell(criarCelulaTitulo("E-mail"));
+        tabelaCabecalho.addCell(pedido.fornecedor().email());
 
-        document.add(
-                new Paragraph(
-                        "Status: " + pedido.status()
-                )
-        );
+        tabelaCabecalho.addCell(criarCelulaTitulo("Status"));
+        tabelaCabecalho.addCell(pedido.status().toString());
+
+        document.add(tabelaCabecalho);
 
         document.add(new Paragraph(" "));
     }
@@ -110,10 +136,10 @@ public class PdfService {
 
         tabela.setWidthPercentage(100);
 
-        tabela.addCell("Produto");
-        tabela.addCell("Quantidade");
-        tabela.addCell("Valor Unitário");
-        tabela.addCell("Subtotal");
+        tabela.addCell(criarCelulaTitulo("Produto"));
+        tabela.addCell(criarCelulaTitulo("Quantidade"));
+        tabela.addCell(criarCelulaTitulo("Valor Unitário"));
+        tabela.addCell(criarCelulaTitulo("Subtotal"));
 
         for (ItemPedidoResponseDTO item :
                 pedido.itens()) {

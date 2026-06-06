@@ -2,6 +2,7 @@ package br.com.alura.exercicios.gerenciador_pedidos.service;
 
 import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.BusinessRuleException;
 import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.ResourceNotFoundException;
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Fornecedor.FornecedorResponseDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.ItemPedidoRequestDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.ItemPedidoResponseDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.PedidoRequestDTO;
@@ -39,11 +40,19 @@ public class PedidoService {
                 .map(this::toDTO)
                 .toList();
 
+        FornecedorResponseDTO fornecedorDTO = new FornecedorResponseDTO(
+                pedido.getFornecedor().getId(),
+                pedido.getFornecedor().getNome(),
+                pedido.getFornecedor().getCnpj(),
+                pedido.getFornecedor().getEndereco(),
+                pedido.getFornecedor().getEmail()
+        );
+
         return new PedidoResponseDTO(
                 pedido.getId(),
                 pedido.getDataPedido(),
                 pedido.getDataEntrega(),
-                pedido.getFornecedor().getNome(),
+                fornecedorDTO,
                 pedido.getStatusPedido(),
                 pedido.getTotalPedido(),
                 itens
