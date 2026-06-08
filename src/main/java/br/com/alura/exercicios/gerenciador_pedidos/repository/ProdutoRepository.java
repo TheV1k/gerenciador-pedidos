@@ -25,7 +25,6 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     List<ProdutoResumoDTO> findByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(String categoriaPesquisada);
 
     List<ProdutoResumoDTO> findByNomeContainingIgnoreCase(String produtoPesquisado);
-    Long countByCategoriasNomeContainingIgnoreCase(String nome);
 
     List<ProdutoResumoDTO> findTop3ByOrderByPrecoDesc();
 
@@ -34,7 +33,6 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     List<ProdutoResumoDTO> findByFornecedorNomeContainingIgnoreCase(String buscarFornecedor);
 
-    Produto findByNome(String excluiProduto);
 
     @Query("SELECT p FROM Produto p WHERE p.preco >= :valorPesquisado" )
     List<ProdutoResumoDTO> buscaProdutoMaiorValor(BigDecimal valorPesquisado);

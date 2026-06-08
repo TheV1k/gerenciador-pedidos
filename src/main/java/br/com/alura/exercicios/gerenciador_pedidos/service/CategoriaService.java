@@ -43,14 +43,6 @@ public class CategoriaService {
         return produtoPorCategoria;
     }
 
-    //Conta os produtos de uma categoria
-
-    public List<CategoriaResumoDTO> contarProdutosCategorias() {
-
-        return repositorioCategoria.contarProdutosCategoria();
-
-
-    }
 
 
     private CategoriaResponseDTO toResponse(Categoria categoria){

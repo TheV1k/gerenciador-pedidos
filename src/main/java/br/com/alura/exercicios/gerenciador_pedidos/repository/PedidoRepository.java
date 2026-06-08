@@ -11,10 +11,10 @@ import java.util.List;
 
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
-    List<PedidoResponseDTO> findByDataEntregaIsNull();
+    List<Pedido> findByDataEntregaIsNull();
 
 
-    List<PedidoResponseDTO> findByDataEntregaIsNotNull();
+    List<Pedido> findByDataEntregaIsNotNull();
 
 
     @Query("""
@@ -22,7 +22,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     FROM Pedido p
     WHERE p.dataPedido BETWEEN :dataInicial AND :dataFinal
 """)
-    List<PedidoResponseDTO> pedidosFeitosEntreDuasDatas(@Param("dataInicial") LocalDate dataInicial,
+    List<Pedido> pedidosFeitosEntreDuasDatas(@Param("dataInicial") LocalDate dataInicial,
                                                         @Param("dataFinal")  LocalDate dataFinal);
 
     @Query("""
@@ -30,16 +30,16 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     FROM Pedido p
     WHERE p.dataEntrega BETWEEN :dataInicial AND :dataFinal
 """)
-    List<PedidoResponseDTO> pedidosEntreguesEntreDuasDatas(@Param("dataInicial") LocalDate dataInicial,
+    List<Pedido> pedidosEntreguesEntreDuasDatas(@Param("dataInicial") LocalDate dataInicial,
                                                         @Param("dataFinal")  LocalDate dataFinal);
 
 
-    List<PedidoResponseDTO> findByDataPedidoAfter(LocalDate data);
+    List<Pedido> findByDataPedidoAfter(LocalDate data);
 
-    List<PedidoResponseDTO> findByDataEntregaBefore(LocalDate data);
+    List<Pedido> findByDataEntregaBefore(LocalDate data);
 
 
-    List<PedidoResponseDTO> findByDataPedidoBefore(LocalDate data);
+    List<Pedido> findByDataPedidoBefore(LocalDate data);
 
-    List<PedidoResponseDTO> findByDataEntregaAfter(LocalDate data);
+    List<Pedido> findByDataEntregaAfter(LocalDate data);
 }

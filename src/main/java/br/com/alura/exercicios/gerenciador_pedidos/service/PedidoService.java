@@ -118,77 +118,80 @@ public class PedidoService {
     }
 
     //Busca pedidos sem data de entrega
-    public List<PedidoResponseDTO> buscarPedidosSemData() {
+    public List<PedidoResponseDTO> buscarPedidosNaoEntregue() {
 
-        List<PedidoResponseDTO> pedidos =
-                repositorioPedido.findByDataEntregaIsNull();
+       return
+                repositorioPedido.findByDataEntregaIsNull().stream().map(this::toResponseDTO).toList();
 
-        return pedidos;
+
     }
 
     //Busca pedidos entregue
     public List<PedidoResponseDTO> buscarPedidosEntregue() {
 
-        List<PedidoResponseDTO> pedidos =
-                repositorioPedido.findByDataEntregaIsNotNull();
+        return
+                repositorioPedido.findByDataEntregaIsNotNull().stream().map(this::toResponseDTO).toList();
 
-        return pedidos;
+
     }
 
     //Busca pedidos realizados antes de uma data
     public List<PedidoResponseDTO>pedidosFeitosAntesDeUmaData(LocalDate data) {
 
-        List<PedidoResponseDTO> pedidos =
-                repositorioPedido.findByDataPedidoBefore(data);
+        return
+                repositorioPedido.findByDataPedidoBefore(data).stream().map(this::toResponseDTO).toList();
 
-        return pedidos;
+
     }
 
     //Busca pedidos entregues antes de uma data
     public List<PedidoResponseDTO>pedidosEntreguesAntesDeUmaData(LocalDate data) {
 
-        List<PedidoResponseDTO> pedidos =
-                repositorioPedido.findByDataEntregaBefore(data);
+      return
+                repositorioPedido.findByDataEntregaBefore(data).stream().map(this::toResponseDTO).toList();
 
-        return pedidos;
     }
 
     //Busca pedidos feitos após uma data
     public List<PedidoResponseDTO> pedidosFeitosDepoisDeUmaData(LocalDate data) {
 
-        List<PedidoResponseDTO> pedidos =
-                repositorioPedido.findByDataPedidoAfter(data);
+        return repositorioPedido.findByDataPedidoAfter(data).stream().map(this::toResponseDTO).toList();
 
-        return pedidos;
+
     }
 
     //Busca pedidos Entregue após uma data
     public List<PedidoResponseDTO> pedidosEntregueDepoisDeUmaData(LocalDate data) {
 
-        List<PedidoResponseDTO> pedidos =
-                repositorioPedido.findByDataEntregaAfter(data);
 
-        return pedidos;
+               return repositorioPedido.findByDataEntregaAfter(data).stream().map(this::toResponseDTO).toList();
+
     }
 
     //Busca pedidos feitos entre duas datas
     public List<PedidoResponseDTO> pedidosFeitosEntreDuasDatas(LocalDate dataInicial,
                                                     LocalDate dataFinal) {
 
-        List<PedidoResponseDTO> pedidos =
-                repositorioPedido.pedidosFeitosEntreDuasDatas(dataInicial, dataFinal);
+     return
+                repositorioPedido.pedidosFeitosEntreDuasDatas(dataInicial, dataFinal)
+                        .stream()
+                        .map(this::toResponseDTO)
+                        .toList();
 
-        return pedidos;
+
     }
 
     //Busca pedidos feitos entre duas datas
     public List<PedidoResponseDTO> pedidosEntreguesEntreDuasDatas(LocalDate dataInicial,
                                                                LocalDate dataFinal) {
 
-        List<PedidoResponseDTO> pedidos =
-                repositorioPedido.pedidosEntreguesEntreDuasDatas(dataInicial, dataFinal);
+       return
+                repositorioPedido.pedidosEntreguesEntreDuasDatas(dataInicial, dataFinal)
+                        .stream()
+                        .map(this::toResponseDTO)
+                        .toList();
 
-        return pedidos;
+
     }
 
     //Receber o pedido

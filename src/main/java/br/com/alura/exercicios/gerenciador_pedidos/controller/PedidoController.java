@@ -37,7 +37,7 @@ public class PedidoController {
     //Buscar pedidos não entregues
     @GetMapping("pedidos-nao-entregues")
     public List<PedidoResponseDTO> pedidosNaoEntregues (){
-        return service.buscarPedidosSemData();
+        return service.buscarPedidosNaoEntregue();
     }
 
     //Buscar pedidos entregues

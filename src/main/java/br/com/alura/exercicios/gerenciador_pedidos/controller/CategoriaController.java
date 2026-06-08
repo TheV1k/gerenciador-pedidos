@@ -37,11 +37,6 @@ public class CategoriaController {
     }
 
 
-    @GetMapping("/contagem")
-    public List<CategoriaResumoDTO> contarProdutosCategorias(){
-        return service.contarProdutosCategorias();
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluirCategoria(@PathVariable Long id) {
         service.excluircategoria(id);

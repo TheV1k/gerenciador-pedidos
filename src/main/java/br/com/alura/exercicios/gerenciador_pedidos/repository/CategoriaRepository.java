@@ -23,12 +23,6 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
     @Query("SELECT c.nome, COUNT (p) " +
             "FROM Categoria c " +
             "JOIN c.produtos p " +
-            "GROUP BY c.nome")
-    List<CategoriaResumoDTO> contarProdutosCategoria();
-
-    @Query("SELECT c.nome, COUNT (p) " +
-            "FROM Categoria c " +
-            "JOIN c.produtos p " +
             "GROUP BY c.nome " +
             "HAVING COUNT (p) > 10")
     List<CategoriaResumoDTO> categoriaMaisDeDezProdutos();
