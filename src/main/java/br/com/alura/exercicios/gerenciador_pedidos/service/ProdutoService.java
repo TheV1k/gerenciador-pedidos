@@ -103,6 +103,18 @@ public class ProdutoService {
         );
     }
 
+    //Converte para ResumoDTO
+
+    private  ProdutoResumoDTO toResumoDTO(Produto produto){
+
+        return new ProdutoResumoDTO(
+                produto.getNome(),
+                produto.getPreco(),
+                produto.getCategorias().get(0).getNome(),
+                produto.getFornecedor().getNome()
+        );
+    }
+
     //Busca produto pelo nome
 
     public ProdutoResponseDTO buscarProduto(String produtoPesquisado) {
@@ -118,7 +130,7 @@ public class ProdutoService {
     public List<ProdutoResumoDTO> buscarValorMaior(BigDecimal valorPesquisado){
 
        return
-               repositorioProduto.findByPrecoGreaterThanEqual(valorPesquisado);
+               repositorioProduto.findByPrecoGreaterThanEqual(valorPesquisado).stream().map(this::toResumoDTO).toList();
     }
 
     //Busca valores menores do que o pesquisado
@@ -126,7 +138,7 @@ public class ProdutoService {
     public List<ProdutoResumoDTO> buscarMenoresValores(BigDecimal valorPesquisado){
 
         return
-         repositorioProduto.findByPrecoLessThanEqual(valorPesquisado);
+         repositorioProduto.findByPrecoLessThanEqual(valorPesquisado).stream().map(this::toResumoDTO).toList();
 
     }
 
@@ -135,7 +147,7 @@ public class ProdutoService {
     public List<ProdutoResumoDTO>  tresProdutosMaisCaros() {
 
         return
-                repositorioProduto.findTop3ByOrderByPrecoDesc();
+                repositorioProduto.findTop3ByOrderByPrecoDesc().stream().map(this::toResumoDTO).toList();
 
     }
 
@@ -144,30 +156,30 @@ public class ProdutoService {
     public List<ProdutoResumoDTO> cincoProdutosMaisBaratosDeUmaCategoria(String categoriaPesquisada) {
 
 
-        List<ProdutoResumoDTO> topCincoProdutosMaisBaratos = repositorioProduto
-                .findTop5ByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(categoriaPesquisada);
+       return repositorioProduto
+                .findTop5ByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(categoriaPesquisada).stream().map(this::toResumoDTO).toList();
 
-      return  topCincoProdutosMaisBaratos;
+
     }
 
     //Busca produto por parte do nome
 
     public List<ProdutoResumoDTO> buscarParteDoNome(String produtoPesquisado){
 
-        List<ProdutoResumoDTO> produtoLocalizado =
-                repositorioProduto.
-                        findByNomeContainingIgnoreCase(produtoPesquisado);
 
-        return produtoLocalizado;
+              return   repositorioProduto.
+                        findByNomeContainingIgnoreCase(produtoPesquisado).stream().map(this::toResumoDTO).toList();
+
+
     }
 
     //Busca os produtos de uma categoria e ordena do menor para o maior valor
      public List<ProdutoResumoDTO> ordenaDoMenorParaOMaior (String categoriaPesquisada) {
 
-        List<ProdutoResumoDTO> produtoOrdenadoValorMaior = repositorioProduto
-                .findByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(categoriaPesquisada);
+      return repositorioProduto
+                .findByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(categoriaPesquisada).stream().map(this::toResumoDTO).toList();
 
-        return produtoOrdenadoValorMaior;
+
 
     }
 
@@ -176,10 +188,10 @@ public class ProdutoService {
 
     public List<ProdutoResumoDTO> ordenaDoMaiorParaOMenor(String categoria) {
 
-        List<ProdutoResumoDTO> produtoOrdenadoValorMenor = repositorioProduto
-                .findByCategoriasNomeContainingIgnoreCaseOrderByPrecoDesc(categoria);
+      return repositorioProduto
+                .findByCategoriasNomeContainingIgnoreCaseOrderByPrecoDesc(categoria).stream().map(this::toResumoDTO).toList();
 
-        return produtoOrdenadoValorMenor;
+
 
     }
 
@@ -188,10 +200,10 @@ public class ProdutoService {
 
     public List<ProdutoResumoDTO> produtosPorFornecedor(String buscarFornecedor){
 
-        List<ProdutoResumoDTO> produtoPorFornecedor = repositorioProduto
-                .findByFornecedorNomeContainingIgnoreCase(buscarFornecedor);
+        return   repositorioProduto
+                .findByFornecedorNomeContainingIgnoreCase(buscarFornecedor).stream().map(this::toResumoDTO).toList();
 
-        return  produtoPorFornecedor;
+
     }
 
 
@@ -200,47 +212,47 @@ public class ProdutoService {
 
     public List<ProdutoResumoDTO> buscaProdutoMaiorQueUmValor(BigDecimal valorPesquisado) {
 
-        List<ProdutoResumoDTO> produtosMaiorValor = repositorioProduto
-                .buscaProdutoMaiorValor(valorPesquisado);
-        return produtosMaiorValor;
+        return repositorioProduto
+                .buscaProdutoMaiorValor(valorPesquisado).stream().map(this::toResumoDTO).toList();
+
 
     }
 
     // Retorna a lista de produtos em ordem crescente
     public List<ProdutoResumoDTO> produtosEmOrdemCrescente() {
-        List<ProdutoResumoDTO> produtoEmOrdemCrescente = repositorioProduto
-                .produtoValorCrescente();
-        return  produtoEmOrdemCrescente;
+      return repositorioProduto
+                .produtoValorCrescente().stream().map(this::toResumoDTO).toList();
+
     }
 
     // Retorna a lista de produtos em ordem decrescente
     public List<ProdutoResumoDTO> produtosEmOrdemDecrescente() {
-        List<ProdutoResumoDTO> produtoEmOrdemDecrescente = repositorioProduto
-                .produtoValorDecrescente();
-        return  produtoEmOrdemDecrescente;
+       return repositorioProduto
+                .produtoValorDecrescente().stream().map(this::toResumoDTO).toList();
+
     }
 
     //Busca produtos pela letra inicial
     public List<ProdutoResumoDTO> buscarProdutosPelaLetraInicial(String letra) {
 
-        List<ProdutoResumoDTO> produtoPelaInicial = repositorioProduto.produtoPelaInicial(letra);
-        return produtoPelaInicial;
+       return repositorioProduto.produtoPelaInicial(letra).stream().map(this::toResumoDTO).toList();
+
     }
 
 
     //Busca produtos por nome ou categoria
     public List<ProdutoResumoDTO> buscarPorProdutoOuCategoria(String pesquisa) {
 
-        List<ProdutoResumoDTO> buscaNomeOuCategoria = repositorioProduto.filtraNomeOuCategoria(pesquisa);
+       return repositorioProduto.filtraNomeOuCategoria(pesquisa).stream().map(this::toResumoDTO).toList();
 
-        return buscaNomeOuCategoria;
+
 
     }
 
     //Retorna os cinco produtos mais caros utilizando pesquisa nativa
     public List<ProdutoResumoDTO> buscarCincoMaisCaros() {
 
-        return repositorioProduto.cincoProdutosMaisCaros();
+        return repositorioProduto.cincoProdutosMaisCaros().stream().map(this::toResumoDTO).toList();
     }
 
     public ProdutoResponseDTO buscarProdutoPorId(Long id) {

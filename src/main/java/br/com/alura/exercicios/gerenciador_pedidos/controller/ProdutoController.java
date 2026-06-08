@@ -72,7 +72,7 @@ public class ProdutoController {
 
     //Busca os cinco mais baratos de uma categoria
     @GetMapping("/5-mais-baratos-categoria/{categoria}")
-    public List<ProdutoResumoDTO> cincoMaisBaratosCategorias(@PathVariable String categoriaPesquisada){
+    public List<ProdutoResumoDTO> cincoMaisBaratosCategorias(@RequestParam String categoriaPesquisada){
         return service.cincoProdutosMaisBaratosDeUmaCategoria(categoriaPesquisada);
     }
 

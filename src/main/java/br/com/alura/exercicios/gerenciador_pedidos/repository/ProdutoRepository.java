@@ -11,48 +11,48 @@ import java.util.List;
 
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
+   //Busca produto por ome
     Produto findByNomeEqualsIgnoreCase(String nome);
 
-    List<ProdutoResumoDTO> findByPrecoGreaterThanEqual(BigDecimal valorPesquisado);
+    //Busca com valor maior do que o informado
+    List<Produto> findByPrecoGreaterThanEqual(BigDecimal valorPesquisado);
 
-    List<ProdutoResumoDTO> findByPrecoLessThanEqual(BigDecimal valorPesquisado);
+    //busca produto com valor menor do que o informado
+    List<Produto> findByPrecoLessThanEqual(BigDecimal valorPesquisado);
 
-
+//Busca por nome
     Produto findByNomeIgnoreCase(String nome);
 
-    List<ProdutoResumoDTO> findByCategoriasNomeContainingIgnoreCaseOrderByPrecoDesc(String categoriaPesquisada);
+    List<Produto> findByCategoriasNomeContainingIgnoreCaseOrderByPrecoDesc(String categoriaPesquisada);
 
-    List<ProdutoResumoDTO> findByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(String categoriaPesquisada);
+    List<Produto> findByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(String categoriaPesquisada);
 
-    List<ProdutoResumoDTO> findByNomeContainingIgnoreCase(String produtoPesquisado);
+    List<Produto> findByNomeContainingIgnoreCase(String produtoPesquisado);
 
-    List<ProdutoResumoDTO> findTop3ByOrderByPrecoDesc();
+  //Lista os três produtos mais caros
+    List<Produto> findTop3ByOrderByPrecoDesc();
 
-    List<ProdutoResumoDTO> findTop5ByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(String categoriaPesquisada);
+    List<Produto> findTop5ByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(String categoriaPesquisada);
 
 
-    List<ProdutoResumoDTO> findByFornecedorNomeContainingIgnoreCase(String buscarFornecedor);
+    List<Produto> findByFornecedorNomeContainingIgnoreCase(String buscarFornecedor);
 
 
     @Query("SELECT p FROM Produto p WHERE p.preco >= :valorPesquisado" )
-    List<ProdutoResumoDTO> buscaProdutoMaiorValor(BigDecimal valorPesquisado);
+    List<Produto> buscaProdutoMaiorValor(BigDecimal valorPesquisado);
 
     @Query("SELECT p FROM Produto p ORDER BY p.preco ASC")
-    List<ProdutoResumoDTO> produtoValorCrescente();
+    List<Produto> produtoValorCrescente();
 
     @Query("SELECT p FROM Produto p ORDER BY p.preco DESC")
-    List<ProdutoResumoDTO> produtoValorDecrescente();
+    List<Produto> produtoValorDecrescente();
 
     @Query("SELECT p FROM Produto p WHERE p.nome ILIKE :letra%")
-    List<ProdutoResumoDTO> produtoPelaInicial(String letra);
+    List<Produto> produtoPelaInicial(String letra);
 
     @Query("SELECT p FROM Produto p JOIN p.categorias c WHERE p.nome ILIKE :pesquisa OR c.nome ILIKE :pesquisa")
-    List<ProdutoResumoDTO> filtraNomeOuCategoria(@Param("pesquisa") String pesquisa);
+    List<Produto> filtraNomeOuCategoria(@Param("pesquisa") String pesquisa);
 
-
-
-    @Query("SELECT AVG(p.preco) FROM Produto p")
-    BigDecimal mediaDosProdutos();
 
 
     @Query("""
@@ -61,5 +61,5 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
        ORDER BY p.preco DESC
        LIMIT 5
        """)
-    List<ProdutoResumoDTO> cincoProdutosMaisCaros();
+    List<Produto> cincoProdutosMaisCaros();
 }
