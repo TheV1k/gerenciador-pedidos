@@ -19,7 +19,7 @@ public class CategoriaService {
 
         private final CategoriaRepository repositorioCategoria;
 
-        //Coverte em ResumoDTO
+        //Converte em ResumoDTO
         public CategoriaResumoDTO toResumoDTO(Categoria categoria) {
 
             List<ProdutoResumoDTO> produtos = categoria.getProdutos()
