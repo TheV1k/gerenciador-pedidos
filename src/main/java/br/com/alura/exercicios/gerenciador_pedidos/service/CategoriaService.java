@@ -5,7 +5,9 @@ import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.ResourceNotFoundEx
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaRequestDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaResponseDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaResumoDTO;
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoResumoDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Categoria;
+import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.CategoriaRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,24 @@ public class CategoriaService {
 
         private final CategoriaRepository repositorioCategoria;
 
+        //Coverte em ResumoDTO
+        public CategoriaResumoDTO toResumoDTO(Categoria categoria) {
+
+            List<ProdutoResumoDTO> produtos = categoria.getProdutos()
+                    .stream()
+                    .map(produto -> new ProdutoResumoDTO(
+                            produto.getNome(),
+                            produto.getPreco(),
+                            produto.getCategorias().get(0).getNome(),
+                            produto.getFornecedor().getNome()
+                    ))
+                    .toList();
+
+            return new CategoriaResumoDTO(
+                    categoria.getNome(),
+                    produtos
+            );
+        }
 
     public CategoriaService(CategoriaRepository repositorioCategoria) {
         this.repositorioCategoria = repositorioCategoria;
@@ -37,10 +57,9 @@ public class CategoriaService {
 
     public List<CategoriaResumoDTO> buscarCategoria(String categoria){
 
-        List<CategoriaResumoDTO> produtoPorCategoria = repositorioCategoria
-                .findByNomeContainingIgnoreCase(categoria);
+        return repositorioCategoria
+                .findByNomeContainingIgnoreCase(categoria).stream().map(this::toResumoDTO).toList();
 
-        return produtoPorCategoria;
     }
 
 

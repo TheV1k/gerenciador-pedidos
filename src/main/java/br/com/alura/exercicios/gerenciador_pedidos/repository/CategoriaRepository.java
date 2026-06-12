@@ -10,20 +10,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
-    List<CategoriaResumoDTO> findByNomeContainingIgnoreCase(String categoria);
+    List<Categoria> findByNomeContainingIgnoreCase(String categoria);
 
     List<Categoria> findAllByNomeContainingIgnoreCase(String nome);
 
-    @Query("SELECT MAX(p.preco) " +
-            "FROM Produto p " +
-            "JOIN p.categorias c " +
-            "WHERE c.nome = :categoria")
-    BigDecimal calculaValorMaximo(@Param("categoria") String categoriaCalculada);
-
-    @Query("SELECT c.nome, COUNT (p) " +
-            "FROM Categoria c " +
-            "JOIN c.produtos p " +
-            "GROUP BY c.nome " +
-            "HAVING COUNT (p) > 10")
-    List<CategoriaResumoDTO> categoriaMaisDeDezProdutos();
 }
