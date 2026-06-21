@@ -28,7 +28,7 @@ public class FornecedorController {
 
     @Operation(summary = "Busca fornecedor pelo ID")
     @GetMapping("/{id}")
-    public FornecedorResumoDTO buscarFornecedorPorId(@PathVariable Long id){
+    public FornecedorResponseDTO buscarFornecedorPorId(@PathVariable Long id){
 
         return service.buscarFornecedorPorId(id);
     }

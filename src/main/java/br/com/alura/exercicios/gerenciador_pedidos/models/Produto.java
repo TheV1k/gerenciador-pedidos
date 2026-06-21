@@ -1,5 +1,6 @@
 package br.com.alura.exercicios.gerenciador_pedidos.models;
 
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoRequestDTO;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -35,6 +36,12 @@ public class Produto {
 
     public Produto(List<Categoria> categorias) {
         this.categorias = categorias;
+    }
+
+    public  Produto(ProdutoRequestDTO dto){
+        this.nome = dto.nome();
+        this.preco = dto.preco();
+
     }
 
     public  Produto(){}

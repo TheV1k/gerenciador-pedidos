@@ -8,11 +8,12 @@ import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
    //Busca produto por ome
-    Produto findByNomeEqualsIgnoreCase(String nome);
+    Optional<Produto> findByNomeEqualsIgnoreCase(String nome);
 
     //Busca com valor maior do que o informado
     List<Produto> findByPrecoGreaterThanEqual(BigDecimal valorPesquisado);

@@ -1,5 +1,6 @@
 package br.com.alura.exercicios.gerenciador_pedidos.models;
 
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.PedidoRequestDTO;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -21,6 +22,7 @@ public class Pedido {
     private BigDecimal totalPedido;
 
 
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fornecedor_id")
     private Fornecedor fornecedor;
@@ -28,6 +30,11 @@ public class Pedido {
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemPedido> itens;
 
+    public Pedido(PedidoRequestDTO dto) {
+        this.dataPedido = dto.dataPedido();
+        this.dataEntrega = dto.dataEntrega();
+        this.statusPedido = Status.ENVIADO;
+    }
     public Pedido() {
     }
 

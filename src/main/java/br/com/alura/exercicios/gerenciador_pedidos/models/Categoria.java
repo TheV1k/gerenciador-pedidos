@@ -1,5 +1,6 @@
 package br.com.alura.exercicios.gerenciador_pedidos.models;
 
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaRequestDTO;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -16,6 +17,11 @@ public class Categoria {
 
     @ManyToMany(mappedBy = "categorias", fetch = FetchType.EAGER)
     private List <Produto> produtos = new ArrayList<>();
+
+    public Categoria(CategoriaRequestDTO dto) {
+        this.nome = dto.nome();
+
+    }
 
     public Categoria(){}
 

@@ -23,10 +23,10 @@ import static org.mockito.Mockito.*;
 class CategoriaServiceTest {
 
     @Mock
-    private CategoriaRepository categoriaRepository;
+    private CategoriaRepository repository;
 
     @InjectMocks
-    private CategoriaService categoriaService;
+    private CategoriaService service;
 
     @Test
 
@@ -34,14 +34,20 @@ class CategoriaServiceTest {
 
         CategoriaRequestDTO requestDTO = new CategoriaRequestDTO("Bebidas");
 
-        when(categoriaRepository.save(any(Categoria.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-        CategoriaResponseDTO resultado = categoriaService.cadastrarCategoria(requestDTO);
+        when(repository.save(any(Categoria.class)))
+                .thenAnswer(invocation -> {
+                    Categoria cat = invocation.getArgument(0);
+                    cat.setId(1L);
+                    return cat;
+                } );
+
+        CategoriaResponseDTO resultado = service.cadastrarCategoria(requestDTO);
 
         assertNotNull(resultado);
         assertEquals("Bebidas", resultado.nome());
+        assertEquals(1L, resultado.id());
 
-        verify(categoriaRepository).save(any(Categoria.class));
+        verify(repository).save(any(Categoria.class));
 
     }
 
@@ -51,15 +57,15 @@ class CategoriaServiceTest {
         Categoria categoria = new Categoria();
         categoria.setNome("Bebidas");
 
-        when(categoriaRepository.findByNomeContainingIgnoreCase("Bebidas")).thenReturn(List.of(categoria));
+        when(repository.findByNomeContainingIgnoreCase("Bebidas")).thenReturn(List.of(categoria));
 
-        List<CategoriaResumoDTO> resultado = categoriaService.buscarCategoria("Bebidas");
+        List<CategoriaResumoDTO> resultado = service.buscarCategoria("Bebidas");
 
         assertNotNull(resultado);
         assertEquals(1, resultado.size());
         assertEquals("Bebidas", resultado.get(0).nome());
 
-        verify(categoriaRepository)
+        verify(repository)
                 .findByNomeContainingIgnoreCase("Bebidas");
 
     }
@@ -71,15 +77,15 @@ class CategoriaServiceTest {
        categoria.setId(1L);
        categoria.setNome("Bebidas");
 
-       when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoria));
+       when(repository.findById(1L)).thenReturn(Optional.of(categoria));
 
-        CategoriaResponseDTO resultado = categoriaService.buscarCategoriaPorId(1L);
+        CategoriaResponseDTO resultado = service.buscarCategoriaPorId(1L);
 
         assertNotNull(resultado);
         assertEquals(1, resultado.id());
         assertEquals("Bebidas", resultado.nome());
 
-        verify(categoriaRepository).findById(1L);
+        verify(repository).findById(1L);
     }
 
     @Test
@@ -89,29 +95,30 @@ class CategoriaServiceTest {
         categoria.setId(1L);
         categoria.setNome("Bebidas");
 
-        when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoria));
+        when(repository.findById(1L)).thenReturn(Optional.of(categoria));
 
-        categoriaService.excluircategoria(1L);
+        service.excluircategoria(1L);
 
-        verify(categoriaRepository, times(1)).findById(1L);
-        verify(categoriaRepository, times(1)).delete(categoria);
-        verifyNoMoreInteractions(categoria);
+        verify(repository, times(1)).findById(1L);
+        verify(repository, times(1)).delete(categoria);
+        verifyNoMoreInteractions(repository);
 
     }
 
     @Test
     void deveLancarExcecaoAoExcluirCategoriaInexistente() {
 
-        when(categoriaRepository.findById(1L))
+        when(repository.findById(1L))
                 .thenReturn(Optional.empty());
 
         assertThrows(
                 ResourceNotFoundException.class,
-                () -> categoriaService.excluircategoria(1L)
+                () -> service.excluircategoria(1L)
         );
 
-        verify(categoriaRepository).findById(1L);
-        verify(categoriaRepository, never()).delete(any(Categoria.class));
+        verify(repository).findById(1L);
+        verify(repository, never()).delete(any(Categoria.class));
     }
+
 
 }

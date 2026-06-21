@@ -76,12 +76,10 @@ public class PedidoService {
     public PedidoResponseDTO cadastrarPedido(PedidoRequestDTO dto) {
 
         Fornecedor fornecedor = repositorioFornecedor
-                .findFirstByNomeContainingIgnoreCase(dto.nomeFornecedor());
+                .findFirstByNomeContainingIgnoreCase(dto.fornecedor());
 
-        Pedido pedido = new Pedido();
+        Pedido pedido = new Pedido(dto);
         pedido.setFornecedor(fornecedor);
-        pedido.setDataPedido(dto.dataPedido());
-        pedido.setStatusPedido(Status.ENVIADO);
 
         List<ItemPedido> itens = new ArrayList<>();
         BigDecimal totalPedido = BigDecimal.ZERO;
@@ -90,21 +88,18 @@ public class PedidoService {
 
             Produto produto = Optional.ofNullable(
                             repositorioProduto.findByNomeIgnoreCase(dtoItem.produto()))
-                    .orElseThrow(() ->
-                            new ResourceNotFoundException(
-                                    "Produto não encontrado: "
-                                            + dtoItem.produto()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Produto não encontrado: " + dtoItem.produto()));
 
-            ItemPedido item = new ItemPedido();
-            item.setPedido(pedido);
-            item.setProduto(produto);
-            item.setQuantidade(dtoItem.quantidade());
-            item.setPrecoUnitario(produto.getPreco());
+            ItemPedido item = new ItemPedido(
+                    pedido,
+                    produto,
+                    dtoItem.quantidade());
 
-            BigDecimal subtotal = produto.getPreco()
-                    .multiply(BigDecimal.valueOf(dtoItem.quantidade()));
-
-            totalPedido = totalPedido.add(subtotal);
+            totalPedido = totalPedido.add(
+                    produto.getPreco()
+                            .multiply(BigDecimal.valueOf(dtoItem.quantidade()))
+            );
 
             itens.add(item);
         }

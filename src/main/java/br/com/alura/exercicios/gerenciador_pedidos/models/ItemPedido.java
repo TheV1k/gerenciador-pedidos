@@ -21,6 +21,12 @@ public class ItemPedido {
 
     private BigDecimal precoUnitario;
 
+    public ItemPedido(Pedido pedido, Produto produto, Integer quantidade) {
+        this.pedido = pedido;
+        this.produto = produto;
+        this.quantidade = quantidade;
+    }
+
     public Pedido getPedido() {
         return pedido;
     }

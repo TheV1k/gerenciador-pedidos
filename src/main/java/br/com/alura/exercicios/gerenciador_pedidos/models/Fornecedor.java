@@ -17,6 +17,12 @@ public class Fornecedor {
     private String email;
 
 
+    public Fornecedor(FornecedorRequestDTO dto) {
+        this.nome = dto.nome();
+        this.cnpj = dto.cnpj();
+        this.endereco = dto.endereco();
+        this.email = dto.email();
+    }
 
     public Fornecedor(){}
 
@@ -60,6 +66,8 @@ public class Fornecedor {
     public void setEmail(String email) {
         this.email = email;
     }
+
+
 
     @Override
     public String toString() {

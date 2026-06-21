@@ -8,6 +8,7 @@ import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoResponseDT
 import br.com.alura.exercicios.gerenciador_pedidos.models.Fornecedor;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.FornecedorRepository;
+import br.com.alura.exercicios.gerenciador_pedidos.validacoes.FornecedorValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,9 +17,11 @@ import java.util.Optional;
 public class FornecedorService {
 
     private final FornecedorRepository repositorioFornecedor;
+    private final FornecedorValidator validator;
 
-    public FornecedorService(FornecedorRepository repositorioFornecedor) {
+    public FornecedorService(FornecedorRepository repositorioFornecedor, FornecedorValidator validator) {
         this.repositorioFornecedor = repositorioFornecedor;
+        this.validator = validator;
     }
 
     private FornecedorResponseDTO toResponseDTO(Fornecedor fornecedor) {
@@ -39,13 +42,8 @@ public class FornecedorService {
     //Cadastra fornecedor
     public FornecedorResponseDTO cadastrarFornecedor(FornecedorRequestDTO dto) {
 
-
+        validator.validarFornecedor(dto);
         Fornecedor fornecedor = new Fornecedor();
-
-        fornecedor.setNome(dto.nome());
-        fornecedor.setCnpj(dto.cnpj());
-        fornecedor.setEndereco(dto.endereco());
-        fornecedor.setEmail(dto.email());
 
         Fornecedor fornecedorSalvo = repositorioFornecedor.save(fornecedor);
 
@@ -63,10 +61,10 @@ public class FornecedorService {
     }
 
     //buscar Fornecedor por ID
-    public FornecedorResumoDTO buscarFornecedorPorId(Long id) {
+    public FornecedorResponseDTO buscarFornecedorPorId(Long id) {
         Fornecedor fornecedor = repositorioFornecedor.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Fornecedor não encontrado"));
 
-        return converteResumoDTO(fornecedor);
+        return toResponseDTO(fornecedor);
     }
 }

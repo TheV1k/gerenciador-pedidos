@@ -29,7 +29,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PrecoInvalidoException.class)
     public ResponseEntity<ErrorResponse> handlePreco(PrecoInvalidoException ex, HttpServletRequest request) {
-        return buildResponse(HttpStatus.BAD_REQUEST, "Preço ão pode ser negativo", ex.getMessage(), request);
+        return buildResponse(HttpStatus.BAD_REQUEST, "Preço não pode ser negativo", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(InvalidDataException.class)
+    public ResponseEntity<ErrorResponse> handleData(InvalidDataException ex, HttpServletRequest request) {
+        return buildResponse(HttpStatus.UNPROCESSABLE_CONTENT, "Dados inválidos", ex.getMessage(), request);
     }
 
     private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, String error, String message, HttpServletRequest request) {

@@ -1,5 +1,4 @@
 package br.com.alura.exercicios.gerenciador_pedidos.service;
-import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.PrecoInvalidoException;
 import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.ResourceNotFoundException;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoRequestDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoResponseDTO;
@@ -10,30 +9,30 @@ import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.CategoriaRepository;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.FornecedorRepository;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.ProdutoRepository;
+import br.com.alura.exercicios.gerenciador_pedidos.validacoes.ProdutoValidator;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProdutoService {
     private final ProdutoRepository repositorioProduto;
     private final CategoriaRepository repositorioCategoria;
     private final FornecedorRepository repositorioFornecedor;
+    private final ProdutoValidator validator;
 
-    public ProdutoService(ProdutoRepository repositorioProduto, CategoriaRepository repositorioCategoria, FornecedorRepository repositorioFornecedor) {
+    public ProdutoService(ProdutoRepository repositorioProduto, CategoriaRepository repositorioCategoria, FornecedorRepository repositorioFornecedor, ProdutoValidator validator) {
         this.repositorioProduto = repositorioProduto;
         this.repositorioCategoria = repositorioCategoria;
         this.repositorioFornecedor = repositorioFornecedor;
+        this.validator = validator;
     }
 
     //Método para cadastro de produtos
 
     public ProdutoResponseDTO cadastrarProduto(ProdutoRequestDTO dto){
-
-        if(dto.preco().compareTo(BigDecimal.ZERO) < 0){
-            throw new PrecoInvalidoException("Preço não pode ser negativo");
-        }
 
         Categoria categoria = repositorioCategoria
                 .findAllByNomeContainingIgnoreCase(dto.nomeCategoria())
@@ -46,7 +45,7 @@ public class ProdutoService {
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Fornecedor não encontrado"));
 
-        Produto produto = new Produto(dto.nome(), dto.preco());
+        Produto produto = new Produto(dto);
 
         produto.setCategorias(List.of(categoria));
         produto.setFornecedor(fornecedor);
@@ -60,11 +59,6 @@ public class ProdutoService {
 
         List<Produto> produtos = dtos.stream()
                 .map(dto -> {
-
-                    if (dto.preco().compareTo(BigDecimal.ZERO) < 0) {
-                        throw new PrecoInvalidoException("Preço não pode ser negativo");
-                    }
-
                     Categoria categoria = repositorioCategoria
                             .findAllByNomeContainingIgnoreCase(dto.nomeCategoria())
                             .stream()
@@ -77,7 +71,7 @@ public class ProdutoService {
                             .findFirst()
                             .orElseThrow(() -> new ResourceNotFoundException("Fornecedor não encontrado"));
 
-                    Produto produto = new Produto(dto.nome(), dto.preco());
+                    Produto produto = new Produto(dto);
 
                     produto.setCategorias(List.of(categoria));
                     produto.setFornecedor(fornecedor);
@@ -94,12 +88,23 @@ public class ProdutoService {
     }
 
     //Converte para ResponseDTO
+
     private ProdutoResponseDTO toResponseDTO(Produto produto) {
+
+        String categoria = produto.getCategorias()
+                .stream()
+                .findFirst()
+                .map(Categoria::getNome).orElse(null);
+
+        String fornecedor = Optional.ofNullable(produto.getFornecedor())
+                .map(Fornecedor::getNome)
+                .orElse(null);
+
         return new ProdutoResponseDTO(
                 produto.getNome(),
                 produto.getPreco(),
-                produto.getCategorias().get(0).getNome(),
-                produto.getFornecedor().getNome()
+                categoria,
+                fornecedor
         );
     }
 
@@ -115,12 +120,12 @@ public class ProdutoService {
         );
     }
 
-    //Busca produto pelo nome
-
-    public ProdutoResponseDTO buscarProduto(String produtoPesquisado) {
+    // Busca produto pelo nome
+    public ProdutoResponseDTO buscarProduto(String nome) {
 
         Produto produto = repositorioProduto
-                .findByNomeEqualsIgnoreCase(produtoPesquisado);
+                .findByNomeEqualsIgnoreCase(nome)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
 
         return toResponseDTO(produto);
     }
@@ -130,7 +135,10 @@ public class ProdutoService {
     public List<ProdutoResumoDTO> buscarValorMaior(BigDecimal valorPesquisado){
 
        return
-               repositorioProduto.findByPrecoGreaterThanEqual(valorPesquisado).stream().map(this::toResumoDTO).toList();
+               repositorioProduto
+                       .findByPrecoGreaterThanEqual(valorPesquisado)
+                       .stream()
+                       .map(this::toResumoDTO).toList();
     }
 
     //Busca valores menores do que o pesquisado

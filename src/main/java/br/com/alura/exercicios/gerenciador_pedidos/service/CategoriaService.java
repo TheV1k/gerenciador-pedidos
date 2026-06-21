@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoriaService {
@@ -45,12 +46,22 @@ public class CategoriaService {
     //Cadastra Categoria
 
     public CategoriaResponseDTO cadastrarCategoria(CategoriaRequestDTO dto){
-        Categoria categoria = new Categoria(dto.nome());
+        Categoria categoria = new Categoria();
 
         repositorioCategoria.save(categoria);
 
         return toResponse(categoria);
 
+    }
+    
+    //Busca Categoria
+    
+    public Optional<Categoria> buscarCategoriaNome (String categoria){
+
+        return repositorioCategoria
+                .findAllByNomeContainingIgnoreCase(categoria)
+                .stream()
+                .findFirst();
     }
 
     //Retorna os produtos cadastrados por categoria
