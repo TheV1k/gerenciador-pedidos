@@ -34,8 +34,6 @@ class FornecedorValidatorTest {
         BDDMockito.given(repository.existsByEmailIgnoreCase(dto.email())).willReturn(false);
 
 
-        validator.validarFornecedor(dto);
-
         Assertions.assertDoesNotThrow(() -> validator.validarFornecedor(dto));
     }
 
@@ -192,7 +190,7 @@ class FornecedorValidatorTest {
         FornecedorRequestDTO dto = new FornecedorRequestDTO("Fornecedor",
                 "00A00000000100",
                 "Rua Delta -520 - São Paulo",
-                "alfadistribuidoraalfa.com.br");
+                "alfadistribuidora@alfa.com.br");
 
 
         Assertions.assertThrows(InvalidDataException.class, () -> validator.validarFornecedor(dto));
@@ -210,6 +208,22 @@ class FornecedorValidatorTest {
 
 
         Assertions.assertThrows(InvalidDataException.class, () -> validator.validarFornecedor(dto));
+    }
+
+    @Test
+    void deveLancarExcecaoCNPJComQuantidadeIncorreta(){
+
+        FornecedorRequestDTO dto = new FornecedorRequestDTO(
+                "Fornecedor",
+                "123",
+                "Rua Delta",
+                "teste@email.com"
+        );
+
+        Assertions.assertThrows(
+                InvalidDataException.class,
+                () -> validator.validarFornecedor(dto)
+        );
     }
 
 }
