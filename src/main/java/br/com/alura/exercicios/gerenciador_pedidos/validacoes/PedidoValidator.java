@@ -7,9 +7,10 @@ import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.PedidoRequestDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.PedidoRepository;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
-
+@Component
 public class PedidoValidator {
 
     private final PedidoRepository repository;

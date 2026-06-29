@@ -4,8 +4,9 @@ import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.BusinessRuleExcept
 import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.DuplicateResourceException;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoRequestDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.ProdutoRepository;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class ProdutoValidator {
 
     private final ProdutoRepository repository;

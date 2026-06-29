@@ -4,7 +4,9 @@ import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.DuplicateResourceE
 import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.InvalidDataException;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Fornecedor.FornecedorRequestDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.FornecedorRepository;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FornecedorValidator {
 
     private final FornecedorRepository repository;

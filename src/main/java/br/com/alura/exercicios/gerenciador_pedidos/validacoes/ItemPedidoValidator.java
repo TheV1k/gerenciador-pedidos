@@ -3,9 +3,11 @@ package br.com.alura.exercicios.gerenciador_pedidos.validacoes;
 import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.BusinessRuleException;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.ItemPedidoRequestDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.PedidoRepository;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class ItemPedidoValidator {
+
 
     private final PedidoRepository repository;
 
