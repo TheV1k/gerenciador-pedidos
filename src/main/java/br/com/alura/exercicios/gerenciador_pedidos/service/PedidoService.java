@@ -11,6 +11,8 @@ import br.com.alura.exercicios.gerenciador_pedidos.models.*;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.FornecedorRepository;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.PedidoRepository;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.ProdutoRepository;
+import br.com.alura.exercicios.gerenciador_pedidos.validacoes.ItemPedidoValidator;
+import br.com.alura.exercicios.gerenciador_pedidos.validacoes.PedidoValidator;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,12 +26,16 @@ public class PedidoService {
     private final FornecedorRepository repositorioFornecedor;
     private final PedidoRepository repositorioPedido;
     private final PdfService pdfService;
+    private final PedidoValidator pedidoValidator;
+    private final ItemPedidoValidator itemPedidoValidator;
 
-    public PedidoService(ProdutoRepository repositorioProduto, FornecedorRepository repositorioFornecedor, PedidoRepository repositorioPedido, PdfService pdfService) {
+    public PedidoService(ProdutoRepository repositorioProduto, FornecedorRepository repositorioFornecedor, PedidoRepository repositorioPedido, PdfService pdfService, PedidoValidator pedidoValidator, ItemPedidoValidator itemPedidoValidator) {
         this.repositorioProduto = repositorioProduto;
         this.repositorioFornecedor = repositorioFornecedor;
         this.repositorioPedido = repositorioPedido;
         this.pdfService = pdfService;
+        this.pedidoValidator = pedidoValidator;
+        this.itemPedidoValidator = itemPedidoValidator;
     }
 
 
@@ -78,6 +84,8 @@ public class PedidoService {
         Fornecedor fornecedor = repositorioFornecedor
                 .findFirstByNomeContainingIgnoreCase(dto.fornecedor());
 
+
+        pedidoValidator.validarPedido(dto);
         Pedido pedido = new Pedido(dto);
         pedido.setFornecedor(fornecedor);
 
@@ -86,6 +94,7 @@ public class PedidoService {
 
         for (ItemPedidoRequestDTO dtoItem : dto.itemPedido()) {
 
+            itemPedidoValidator.validarItensDoPedido(dtoItem);
             Produto produto = Optional.ofNullable(
                             repositorioProduto.findByNomeIgnoreCase(dtoItem.produto()))
                     .orElseThrow(() -> new ResourceNotFoundException(

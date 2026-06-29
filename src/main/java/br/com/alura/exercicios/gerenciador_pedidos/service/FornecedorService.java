@@ -43,7 +43,7 @@ public class FornecedorService {
     public FornecedorResponseDTO cadastrarFornecedor(FornecedorRequestDTO dto) {
 
         validator.validarFornecedor(dto);
-        Fornecedor fornecedor = new Fornecedor();
+        Fornecedor fornecedor = new Fornecedor(dto);
 
         Fornecedor fornecedorSalvo = repositorioFornecedor.save(fornecedor);
 

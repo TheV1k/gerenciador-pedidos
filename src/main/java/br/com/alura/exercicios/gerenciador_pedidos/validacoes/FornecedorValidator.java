@@ -37,7 +37,7 @@ public class FornecedorValidator {
         }
 
 
-        if(dto.cnpj() == null){
+        if(dto.cnpj() == null || dto.cnpj().isBlank()){
             throw new InvalidDataException("CNPJ não pode ficar em branco!");
         }
 
@@ -47,7 +47,7 @@ public class FornecedorValidator {
         }
 
 
-        if(dto.email() == null){
+        if(dto.email() == null || dto.email().isBlank()){
             throw new InvalidDataException("E-mail não pode ficar em branco");
         }
 
@@ -59,7 +59,7 @@ public class FornecedorValidator {
         }
 
 
-        if(dto.endereco() == null){
+        if(dto.endereco() == null || dto.endereco().isBlank()){
             throw new InvalidDataException("Endereço não pode ficar em branco!");
         }
 
@@ -70,7 +70,7 @@ public class FornecedorValidator {
     private void validarFornecedorNovo(FornecedorRequestDTO dto) {
 
 
-        if(repository.existsByNomeIgnoreCase(dto.nome())){
+       if(repository.existsByNomeIgnoreCase(dto.nome())){
             throw new DuplicateResourceException(
                     "Fornecedor já cadastrado!"
             );

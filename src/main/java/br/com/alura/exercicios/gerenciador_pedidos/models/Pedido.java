@@ -33,7 +33,7 @@ public class Pedido {
     public Pedido(PedidoRequestDTO dto) {
         this.dataPedido = dto.dataPedido();
         this.dataEntrega = dto.dataEntrega();
-        this.statusPedido = Status.ENVIADO;
+        this.statusPedido = Status.CRIADO;
     }
     public Pedido() {
     }

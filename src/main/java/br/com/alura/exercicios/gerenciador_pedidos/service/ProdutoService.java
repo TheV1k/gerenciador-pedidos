@@ -34,24 +34,26 @@ public class ProdutoService {
 
     public ProdutoResponseDTO cadastrarProduto(ProdutoRequestDTO dto){
 
+        validator.validarProduto(dto);
         Categoria categoria = repositorioCategoria
                 .findAllByNomeContainingIgnoreCase(dto.nomeCategoria())
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
-
+                .orElse(null);
         Fornecedor fornecedor = repositorioFornecedor
                 .findByNomeContainingIgnoreCase(dto.nomeFornecedor()).stream()
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Fornecedor não encontrado"));
 
+
         Produto produto = new Produto(dto);
+
 
         produto.setCategorias(List.of(categoria));
         produto.setFornecedor(fornecedor);
-        repositorioProduto.save(produto);
+        Produto produtoSalvo = repositorioProduto.save(produto);
 
-        return toResponseDTO(produto);
+        return toResponseDTO(produtoSalvo);
     }
 
     //Cadastra lote de produtos
@@ -101,6 +103,7 @@ public class ProdutoService {
                 .orElse(null);
 
         return new ProdutoResponseDTO(
+                produto.getId(),
                 produto.getNome(),
                 produto.getPreco(),
                 categoria,

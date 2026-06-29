@@ -2,6 +2,7 @@ package br.com.alura.exercicios.gerenciador_pedidos.repository;
 
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoResumoDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -63,4 +64,6 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
        LIMIT 5
        """)
     List<Produto> cincoProdutosMaisCaros();
+
+    boolean existsByNomeIgnoreCase(@NotBlank String nome);
 }

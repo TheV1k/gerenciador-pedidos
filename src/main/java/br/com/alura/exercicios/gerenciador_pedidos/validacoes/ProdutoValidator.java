@@ -1,28 +1,47 @@
 package br.com.alura.exercicios.gerenciador_pedidos.validacoes;
 
-import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.ResourceNotFoundException;
-import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
+import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.BusinessRuleException;
+import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.DuplicateResourceException;
+import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoRequestDTO;
+import br.com.alura.exercicios.gerenciador_pedidos.repository.ProdutoRepository;
+
 
 public class ProdutoValidator {
 
-    public void validarProduto(Produto produto){
+    private final ProdutoRepository repository;
 
-        validarFornecedor(produto);
-        validarCategoria(produto);
+    public ProdutoValidator(ProdutoRepository repository) {
+        this.repository = repository;
     }
 
-    private void validarCategoria(Produto produto) {
+    public void validarProduto(ProdutoRequestDTO dto) {
+        validarNome(dto);
+        validarUnicidade(dto);
+        validarCategoria(dto);
+        validarFornecedor(dto);
+    }
 
-        if (produto.getCategorias()== null){
-            throw new ResourceNotFoundException("Categoria é obrigatória!");
+    private void validarNome(ProdutoRequestDTO dto) {
+        if (dto.nome() == null || dto.nome().isBlank()) {
+            throw new BusinessRuleException("Nome do produto é obrigatório");
         }
     }
 
-    private void validarFornecedor(Produto produto) {
+    private void validarUnicidade(ProdutoRequestDTO dto) {
+        if (repository.existsByNomeIgnoreCase(dto.nome())) {
+            throw new DuplicateResourceException("Produto já cadastrado");
+        }
+    }
 
-        if (produto.getFornecedor() == null){
+    private void validarCategoria(ProdutoRequestDTO dto) {
+        if (dto.nomeCategoria() == null || dto.nomeCategoria().isBlank()) {
+            throw new BusinessRuleException("Categoria é obrigatória");
+        }
+    }
 
-            throw new ResourceNotFoundException("Fornecedor é obrigatório!");
+    private void validarFornecedor(ProdutoRequestDTO dto) {
+        if (dto.nomeFornecedor() == null || dto.nomeFornecedor().isBlank()) {
+            throw new BusinessRuleException("Fornecedor é obrigatório");
         }
     }
 }

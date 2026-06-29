@@ -3,9 +3,9 @@ package br.com.alura.exercicios.gerenciador_pedidos.service;
 import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.ResourceNotFoundException;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Fornecedor.FornecedorRequestDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Fornecedor.FornecedorResponseDTO;
-import br.com.alura.exercicios.gerenciador_pedidos.models.Categoria;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Fornecedor;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.FornecedorRepository;
+import br.com.alura.exercicios.gerenciador_pedidos.validacoes.FornecedorValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +24,9 @@ class FornecedorServiceTest {
     @Mock
     private FornecedorRepository repository;
 
+    @Mock
+    private FornecedorValidator validator;
+
     @InjectMocks
     private  FornecedorService service;
 
@@ -32,7 +35,7 @@ class FornecedorServiceTest {
 
         FornecedorRequestDTO requestDTO = new FornecedorRequestDTO(
                 "Alfa Distribuidora",
-                "00000000/0001-00",
+                "00000000000100",
                 "Rua Delta -520 - São Paulo",
                 "alfadistribuidora@alfa.com.br"
         );
@@ -48,8 +51,12 @@ class FornecedorServiceTest {
 
         assertNotNull(resultado);
         assertEquals("Alfa Distribuidora", resultado.nome());
+        assertEquals("00000000000100", resultado.cnpj());
+        assertEquals("Rua Delta -520 - São Paulo", resultado.endereco());
+        assertEquals("alfadistribuidora@alfa.com.br", resultado.email());
         assertEquals(1L, resultado.id());
 
+        verify(validator).validarFornecedor(requestDTO);
         verify(repository).save(any(Fornecedor.class));
 
     }
@@ -59,7 +66,7 @@ class FornecedorServiceTest {
 
         Fornecedor fornecedor = new Fornecedor(new FornecedorRequestDTO(
                 "Alfa Distribuidora",
-                "00000000/0001-00",
+                "00000000000100",
                 "Rua Delta -520 - São Paulo",
                 "alfadistribuidora@alfa.com.br"));
 
@@ -73,7 +80,7 @@ class FornecedorServiceTest {
         assertNotNull(resultado);
         assertEquals(1, resultado.id());
         assertEquals("Alfa Distribuidora", resultado.nome());
-        assertEquals("00000000/0001-00", resultado.cnpj());
+        assertEquals("00000000000100", resultado.cnpj());
         assertEquals("Rua Delta -520 - São Paulo", resultado.endereco());
         assertEquals("alfadistribuidora@alfa.com.br", resultado.email());
 
@@ -97,7 +104,7 @@ class FornecedorServiceTest {
         Fornecedor fornecedor = new Fornecedor();
         fornecedor.setId(1L);
         fornecedor.setNome("Alfa Distribuidora");
-        fornecedor.setCnpj( "00000000/0001-00");
+        fornecedor.setCnpj( "00000000000100");
         fornecedor.setEndereco("Rua Delta -520 - São Paulo");
         fornecedor.setEmail("alfadistribuidora@alfa.com.br");
 

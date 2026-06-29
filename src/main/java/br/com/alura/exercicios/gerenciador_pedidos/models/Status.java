@@ -4,6 +4,7 @@ import java.util.Map;
 
 public enum Status {
 
+    CRIADO("Pedido Criado"),
     ENVIADO("Pedido Enviado"),
     ENTREGUE("Pedido Entregue");
 
@@ -16,6 +17,7 @@ public enum Status {
     Status(){}
 
     public static final Map<String, Status> MAPA_STATUS = Map.of(
+            "Pedido Criado", CRIADO,
             "Pedido Enviado", ENVIADO,
             "Pedido Entregue", ENTREGUE
     );

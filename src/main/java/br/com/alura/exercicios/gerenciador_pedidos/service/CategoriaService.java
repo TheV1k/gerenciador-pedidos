@@ -46,7 +46,7 @@ public class CategoriaService {
     //Cadastra Categoria
 
     public CategoriaResponseDTO cadastrarCategoria(CategoriaRequestDTO dto){
-        Categoria categoria = new Categoria();
+        Categoria categoria = new Categoria(dto);
 
         repositorioCategoria.save(categoria);
 

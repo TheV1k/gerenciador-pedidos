@@ -42,4 +42,6 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     List<Pedido> findByDataPedidoBefore(LocalDate data);
 
     List<Pedido> findByDataEntregaAfter(LocalDate data);
+
+    boolean existsByNomeEqualsIgnoreCase(String produto);
 }
