@@ -4,8 +4,11 @@ import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.BusinessRuleExcept
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.ItemPedidoRequestDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class ItemPedidoValidatorTest {
 
 
