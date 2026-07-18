@@ -21,11 +21,21 @@ public class ItemPedido {
 
     private BigDecimal precoUnitario;
 
+
     public ItemPedido(Pedido pedido, Produto produto, Integer quantidade) {
         this.pedido = pedido;
         this.produto = produto;
         this.quantidade = quantidade;
     }
+
+    public BigDecimal getSubtotal() {
+        if (this.produto == null || this.quantidade == null) {
+            return BigDecimal.ZERO;
+        }
+        return this.produto.getPreco()
+                .multiply(BigDecimal.valueOf(this.quantidade));
+    }
+
 
     public Pedido getPedido() {
         return pedido;
@@ -52,4 +62,7 @@ public class ItemPedido {
         return precoUnitario;
     }
 
+    public void setPrecoUnitario(BigDecimal precoUnitario) {
+        this.precoUnitario = precoUnitario;
+    }
 }

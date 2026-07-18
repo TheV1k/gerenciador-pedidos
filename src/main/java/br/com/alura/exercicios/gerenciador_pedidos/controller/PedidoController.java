@@ -2,6 +2,7 @@ package br.com.alura.exercicios.gerenciador_pedidos.controller;
 
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.PedidoRequestDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.PedidoResponseDTO;
+import br.com.alura.exercicios.gerenciador_pedidos.models.Pedido;
 import br.com.alura.exercicios.gerenciador_pedidos.service.PedidoService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/pedido")
@@ -31,8 +33,9 @@ public class PedidoController {
 
     @Operation(summary = "Buscar pedido por ID")
     @GetMapping("/{id}")
-    public List<PedidoResponseDTO> pedidoPorId(@PathVariable Long id){
-       return service.buscarPedidoPorId(id);
+    public Pedido pedidoPorId(@PathVariable Long id){
+
+        return service.buscarPedidoPorId(id);
     }
 
 

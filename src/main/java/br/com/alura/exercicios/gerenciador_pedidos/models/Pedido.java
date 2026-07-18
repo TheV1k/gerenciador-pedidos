@@ -38,6 +38,13 @@ public class Pedido {
     public Pedido() {
     }
 
+
+    public void calcularTotal() {
+        this.totalPedido = this.itens.stream()
+                .map(ItemPedido::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
     public Pedido(Fornecedor fornecedor) {
         this.fornecedor = fornecedor;
     }

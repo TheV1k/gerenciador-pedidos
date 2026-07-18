@@ -66,4 +66,6 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     List<Produto> cincoProdutosMaisCaros();
 
     boolean existsByNomeIgnoreCase(@NotBlank String nome);
+
+    List<Produto> findByNomeIgnoreCaseIn(List<String> nomesProdutos);
 }

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PedidoService {
@@ -75,51 +76,58 @@ public class PedidoService {
                 item.getProduto().getNome(),
                 item.getQuantidade(),
                 item.getPrecoUnitario(),
-                subtotal
+                item.getSubtotal()
         );
     }
     //Cadastra um novo pedido
     public PedidoResponseDTO cadastrarPedido(PedidoRequestDTO dto) {
 
+        // 1. Validação inicial e busca do fornecedor
+        pedidoValidator.validarPedido(dto);
         Fornecedor fornecedor = repositorioFornecedor
                 .findFirstByNomeContainingIgnoreCase(dto.fornecedor());
 
-
-        pedidoValidator.validarPedido(dto);
         Pedido pedido = new Pedido(dto);
         pedido.setFornecedor(fornecedor);
 
+        // 2. Otimização de Performance: Coleta todos os nomes de produtos
+        List<String> nomesProdutos = dto.itemPedido().stream()
+                .map(ItemPedidoRequestDTO::produto)
+                .toList();
+
+        // Busca todos os produtos do banco em uma única query
+        List<Produto> produtosCadastrados = repositorioProduto.findByNomeIgnoreCaseIn(nomesProdutos);
+
+        // Mapeia para busca rápida O(1) no loop
+        Map<String, Produto> mapaProdutos = produtosCadastrados.stream()
+                .collect(Collectors.toMap(p -> p.getNome().toLowerCase(), p -> p));
+
+        // 3. Construção dos itens
         List<ItemPedido> itens = new ArrayList<>();
-        BigDecimal totalPedido = BigDecimal.ZERO;
 
         for (ItemPedidoRequestDTO dtoItem : dto.itemPedido()) {
-
             itemPedidoValidator.validarItensDoPedido(dtoItem);
-            Produto produto = Optional.ofNullable(
-                            repositorioProduto.findByNomeIgnoreCase(dtoItem.produto()))
+
+            // Busca o produto no mapa carregado em memória
+            Produto produto = Optional.ofNullable(mapaProdutos.get(dtoItem.produto().toLowerCase()))
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "Produto não encontrado: " + dtoItem.produto()));
 
-            ItemPedido item = new ItemPedido(
-                    pedido,
-                    produto,
-                    dtoItem.quantidade());
+            ItemPedido item = new ItemPedido(pedido, produto, dtoItem.quantidade());
 
-            totalPedido = totalPedido.add(
-                    produto.getPreco()
-                            .multiply(BigDecimal.valueOf(dtoItem.quantidade()))
-            );
+            // Garante que o preço unitário fique registrado no item no momento da compra
+            item.setPrecoUnitario(produto.getPreco());
 
             itens.add(item);
         }
 
         pedido.setItens(itens);
-        pedido.setTotalPedido(totalPedido);
+        pedido.calcularTotal();
 
         Pedido pedidoSalvo = repositorioPedido.save(pedido);
-
         return toResponseDTO(pedidoSalvo);
     }
+
 
     //Busca pedidos sem data de entrega
     public List<PedidoResponseDTO> buscarPedidosNaoEntregue() {
@@ -224,22 +232,17 @@ public class PedidoService {
         return toResponseDTO(pedidoAtualizado);
     }
 
-    //Deleta pedido
-    public Pedido deletarPedido (long idPedido){
+    // Deletar o pedido
+    public Pedido deletarPedido(long idPedido) {
 
+        Pedido pedido = repositorioPedido.findById(idPedido)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado"));
 
-        Optional<Pedido> pedidoOptional = repositorioPedido.findById(idPedido);
+        repositorioPedido.delete(pedido);
 
-        if (pedidoOptional.isPresent()){
-            Pedido pedido = pedidoOptional
-                    .get();
-            repositorioPedido.deleteById(idPedido);
-
-            return pedido;
-        }
-return null;
-
+        return pedido;
     }
+
 
     public byte[] gerarPdf(Long pedidoId) {
 
@@ -258,11 +261,8 @@ return null;
                 .gerarPedidoPdf(dto);
     }
 
-    public List<PedidoResponseDTO> buscarPedidoPorId(Long id){
-
-        Pedido pedido = repositorioPedido.findById(id)
+    public Pedido buscarPedidoPorId(Long id) {
+        return repositorioPedido.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado"));
-
-        return List.of(toResponseDTO(pedido));
     }
 }
