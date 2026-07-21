@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -790,25 +791,28 @@ class PedidoServiceTest {
     }
 
     @Test
-    void deveEncontrarPedidoPorID(){
+    void deveEncontrarPedidoPorID() {
 
-       //ARRANGE
+        // ARRANGE
         Long idPedido = 1L;
+
         Pedido mockPedido = new Pedido();
         mockPedido.setId(idPedido);
+        mockPedido.setItens(Collections.emptyList());
 
-        BDDMockito.given(repositorioPedido.findById(1L)).willReturn(Optional.of(mockPedido));
+        Fornecedor mockFornecedor = new Fornecedor();
+        mockFornecedor.setId(10L); // Defina um ID qualquer
+        mockPedido.setFornecedor(mockFornecedor);
 
-        //ACT
+        BDDMockito.given(repositorioPedido.findById(idPedido)).willReturn(Optional.of(mockPedido));
 
-        Pedido resultado = service.buscarPedidoPorId(1L);
+        // ACT
+        PedidoResponseDTO resultado = service.buscarPedidoPorId(idPedido);
 
-        //ASSERT
+        // ASSERT
         Assertions.assertNotNull(resultado);
-        Assertions.assertEquals(idPedido, resultado.getId());
+        Assertions.assertEquals(idPedido, resultado.id()); // ou resultado.getId() se for classe comum
         BDDMockito.verify(repositorioPedido, BDDMockito.times(1)).findById(idPedido);
-
-
     }
 
     @Test
@@ -826,7 +830,7 @@ class PedidoServiceTest {
                 () -> service.buscarPedidoPorId(idPedido));
 
         //ASSERT
-        Assertions.assertEquals("Pedido não encontrado", excecao.getMessage());
+        Assertions.assertEquals("Pedido não encontrado com o ID: " + idPedido, excecao.getMessage());
 
     }
 

@@ -33,7 +33,7 @@ public class PedidoController {
 
     @Operation(summary = "Buscar pedido por ID")
     @GetMapping("/{id}")
-    public Pedido pedidoPorId(@PathVariable Long id){
+    public PedidoResponseDTO pedidoPorId(@PathVariable Long id){
 
         return service.buscarPedidoPorId(id);
     }

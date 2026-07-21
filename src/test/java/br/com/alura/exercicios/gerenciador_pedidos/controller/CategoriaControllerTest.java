@@ -7,7 +7,6 @@ import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaRespon
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaResumoDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoResumoDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.service.CategoriaService;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
@@ -153,7 +152,7 @@ class CategoriaControllerTest {
     }
 
     @Test
-    void deveRetornar200EEListarProdutosPorCategoria() throws Exception {
+    void deveRetornar200EListarProdutosPorCategoria() throws Exception {
 
         // ARRANGE
         String categoria = "Grãos";
@@ -183,14 +182,14 @@ class CategoriaControllerTest {
         Long idExistente = 1L;
 
         //ACT
-        doNothing().when(service).excluircategoria(idExistente);
+        doNothing().when(service).excluirCategoria(idExistente);
 
         mockMvc.perform(delete("/categoria/{id}", idExistente)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
         //ASSERT
-        verify(service).excluircategoria(idExistente);
+        verify(service).excluirCategoria(idExistente);
     }
 
     @Test
@@ -201,15 +200,18 @@ class CategoriaControllerTest {
 
         //ACT
         doThrow(new ResourceNotFoundException("Categoria não encontrada"))
-                .when(service).excluircategoria(idInexistente);
+                .when(service).excluirCategoria(idInexistente);
 
         mockMvc.perform(delete("/categoria/{id}", idInexistente)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
        //ASSERT
-        verify(service).excluircategoria(idInexistente);
+        verify(service).excluirCategoria(idInexistente);
     }
+
+
+
 }
 
 

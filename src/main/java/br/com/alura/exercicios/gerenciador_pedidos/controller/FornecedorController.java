@@ -5,6 +5,7 @@ import br.com.alura.exercicios.gerenciador_pedidos.dto.Fornecedor.FornecedorResp
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Fornecedor.FornecedorResumoDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.service.FornecedorService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ FornecedorController {
     @Operation(summary = "Cadastra Fornecedor")
     @PostMapping
     public ResponseEntity<FornecedorResponseDTO> salvar(
-            @RequestBody FornecedorRequestDTO dto) {
+            @RequestBody @Valid  FornecedorRequestDTO dto) {
 
         return ResponseEntity.ok(
                 service.cadastrarFornecedor(dto));

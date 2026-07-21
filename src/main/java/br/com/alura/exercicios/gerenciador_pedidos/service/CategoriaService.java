@@ -7,13 +7,10 @@ import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaRespon
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaResumoDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoResumoDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Categoria;
-import br.com.alura.exercicios.gerenciador_pedidos.models.Produto;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.CategoriaRepository;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CategoriaService {
@@ -88,7 +85,7 @@ public class CategoriaService {
 
     }
 
-    public void excluircategoria(Long id) {
+    public void excluirCategoria(Long id) {
 
         Categoria categoria =  repositorioCategoria.findById(id)
                 .orElseThrow(() ->

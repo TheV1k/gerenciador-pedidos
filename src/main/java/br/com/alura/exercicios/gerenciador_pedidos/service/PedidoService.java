@@ -261,8 +261,9 @@ public class PedidoService {
                 .gerarPedidoPdf(dto);
     }
 
-    public Pedido buscarPedidoPorId(Long id) {
+    public PedidoResponseDTO buscarPedidoPorId(Long id) {
         return repositorioPedido.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado"));
+                .map(this::toResponseDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado com o ID: " + id));
     }
 }

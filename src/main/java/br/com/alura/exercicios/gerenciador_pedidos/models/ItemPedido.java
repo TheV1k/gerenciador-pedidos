@@ -21,12 +21,15 @@ public class ItemPedido {
 
     private BigDecimal precoUnitario;
 
+    public  ItemPedido(){}
+
 
     public ItemPedido(Pedido pedido, Produto produto, Integer quantidade) {
         this.pedido = pedido;
         this.produto = produto;
         this.quantidade = quantidade;
     }
+
 
     public BigDecimal getSubtotal() {
         if (this.produto == null || this.quantidade == null) {

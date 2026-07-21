@@ -97,7 +97,7 @@ class CategoriaServiceTest {
 
         when(repository.findById(1L)).thenReturn(Optional.of(categoria));
 
-        service.excluircategoria(1L);
+        service.excluirCategoria(1L);
 
         verify(repository, times(1)).findById(1L);
         verify(repository, times(1)).delete(categoria);
@@ -113,7 +113,7 @@ class CategoriaServiceTest {
 
         assertThrows(
                 ResourceNotFoundException.class,
-                () -> service.excluircategoria(1L)
+                () -> service.excluirCategoria(1L)
         );
 
         verify(repository).findById(1L);
