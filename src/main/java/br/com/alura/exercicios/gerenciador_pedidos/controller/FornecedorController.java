@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/fornecedor")
-public class FornecedorController {
+public class
+FornecedorController {
 
     @Autowired
     private FornecedorService service;

@@ -55,13 +55,13 @@ public class CategoriaService {
     }
     
     //Busca Categoria
-    
-    public Optional<Categoria> buscarCategoriaNome (String categoria){
+
+    public List<CategoriaResponseDTO> buscarCategoriaNome(String categoria) {
 
         return repositorioCategoria
                 .findAllByNomeContainingIgnoreCase(categoria)
                 .stream()
-                .findFirst();
+                .map(this::toResponse).toList();
     }
 
     //Retorna os produtos cadastrados por categoria

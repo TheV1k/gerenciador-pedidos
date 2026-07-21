@@ -5,6 +5,7 @@ import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaRespon
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaResumoDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.service.CategoriaService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class CategoriaController {
     @Operation(summary = "Cadastra categoria")
     @PostMapping
     public ResponseEntity<CategoriaResponseDTO> salvar(
-            @RequestBody CategoriaRequestDTO dto) {
+            @RequestBody @Valid CategoriaRequestDTO dto) {
 
         return ResponseEntity.ok(
                 service.cadastrarCategoria(dto));

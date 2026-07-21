@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidDataException.class)
     public ResponseEntity<ErrorResponse> handleData(InvalidDataException ex, HttpServletRequest request) {
-        return buildResponse(HttpStatus.UNPROCESSABLE_CONTENT, "Dados inválidos", ex.getMessage(), request);
+        return buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, "Dados inválidos", ex.getMessage(), request);
     }
 
     private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, String error, String message, HttpServletRequest request) {
