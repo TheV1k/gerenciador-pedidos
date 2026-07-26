@@ -5,6 +5,7 @@ import br.com.alura.exercicios.gerenciador_pedidos.dto.Pedido.PedidoResponseDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.models.Pedido;
 import br.com.alura.exercicios.gerenciador_pedidos.service.PedidoService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -24,7 +25,7 @@ public class PedidoController {
     @Operation(summary = "Cadastra pedido" )
     @PostMapping
     public ResponseEntity<PedidoResponseDTO> salvar(
-            @RequestBody PedidoRequestDTO dto) {
+          @Valid @RequestBody PedidoRequestDTO dto) {
 
         return ResponseEntity.ok(
                 service.cadastrarPedido(dto));
@@ -134,4 +135,8 @@ public class PedidoController {
 
         return ResponseEntity.noContent().build();
     }
+
+
+
+
 }

@@ -2,16 +2,12 @@ package br.com.alura.exercicios.gerenciador_pedidos.controller;
 
 import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.BusinessRuleException;
 import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.ResourceNotFoundException;
-import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaRequestDTO;
-import br.com.alura.exercicios.gerenciador_pedidos.dto.Categoria.CategoriaResponseDTO;
+
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Fornecedor.FornecedorRequestDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Fornecedor.FornecedorResponseDTO;
-import br.com.alura.exercicios.gerenciador_pedidos.models.Categoria;
-import br.com.alura.exercicios.gerenciador_pedidos.models.Fornecedor;
-import br.com.alura.exercicios.gerenciador_pedidos.repository.FornecedorRepository;
+
 import br.com.alura.exercicios.gerenciador_pedidos.service.FornecedorService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,8 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
