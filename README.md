@@ -16,27 +16,37 @@ Sistema desenvolvido em Java com Spring Boot para gerenciamento de fornecedores,
 * Validação de regras de negócio
 * Tratamento global de exceções
 * Documentação da API com Swagger/OpenAPI
-
+* Cobertura de testes unitários para a camada web (Controllers) e regras de negócio
 ---
 
 # 🛠️ Tecnologias utilizadas
 
-* Java 21
-* Spring Boot
-* Spring Data JPA
-* Hibernate
-* PostgreSQL
-* Maven
-* Swagger/OpenAPI
-* Lombok
-* iText PDF
-* IntelliJ IDEA
+* **Linguagem & Framework:** Java 21, Spring Boot 3
+* **Persistência:** Spring Data JPA, Hibernate, PostgreSQL
+* **Testes:** JUnit 5, Mockito, MockMvc
+* **Gerenciador de Dependências:** Maven
+* **Documentação & Ferramentas:** Swagger / OpenAPI, Lombok, iText PDF, IntelliJ IDEA
 
 ---
 
 # 📂 Estrutura do projeto
 
 ```text
+src
+├── main
+│   └── java
+│       └── br/com/alura/exercicios/gerenciador_pedidos
+│           ├── controller
+│           ├── dto
+│           ├── exceptions
+│           ├── models
+│           ├── repository
+│           ├── service
+│           └── GerenciadorPedidosApplication
+└── test
+    └── java
+        └── br/com/alura/exercicios/gerenciador_pedidos
+            └── controller
 src/main/java
 ├── controller
 ├── dto
@@ -147,6 +157,22 @@ A aplicação estará disponível em:
 ```text
 http://localhost:8080
 ```
+## 🧪 Como executar os testes
+
+A aplicação conta com testes unitários utilizando JUnit 5, Mockito e MockMvc para garantir a integridade dos endpoints e das regras de negócio.
+
+Para rodar toda a suíte de testes, execute no terminal:
+
+```
+mvn test
+```
+Os cenários validados incluem:
+
+Criação, consulta, atualização e remoção de registros.
+
+Retornos de status HTTP corretos (200 OK, 201 Created, 204 No Content, 404 Not Found).
+
+Comportamento e chamadas simuladas de serviços através de Mocks.
 
 ---
 
@@ -278,7 +304,10 @@ O sistema permite gerar um relatório em PDF contendo:
 
 # 🤝 Autor
 
-[<img src="https://avatars.githubusercontent.com/u/62910266?s=400&v=4" width="120" alt="Victor Moreira Ramos">
-**Victor Moreira Ramos**](https://github.com/TheV1k)
-
+<p align="center">
+  <a href="https://github.com/TheV1k">
+    <img src="https://avatars.githubusercontent.com/u/62910266?s=400&v=4" width="120" alt="Victor Moreira Ramos"><br>
+    <b>Victor Moreira Ramos</b>
+  </a>
+</p>
 Desenvolvedor Backend Java | Spring Boot | PostgreSQL
