@@ -310,4 +310,4 @@ O sistema permite gerar um relatório em PDF contendo:
     <b>Victor Moreira Ramos</b>
   </a>
 </p>
-Desenvolvedor Backend Java | Spring Boot | PostgreSQL
+<p align="center"> Desenvolvedor Backend Java | Spring Boot | PostgreSQL</p>
