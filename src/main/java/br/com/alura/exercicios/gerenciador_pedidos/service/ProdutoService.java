@@ -89,9 +89,10 @@ public class ProdutoService {
                 .toList();
     }
 
+
     //Converte para ResponseDTO
 
-    private ProdutoResponseDTO toResponseDTO(Produto produto) {
+    ProdutoResponseDTO toResponseDTO(Produto produto) {
 
         String categoria = produto.getCategorias()
                 .stream()

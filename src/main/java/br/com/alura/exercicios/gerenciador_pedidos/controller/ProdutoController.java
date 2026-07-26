@@ -6,6 +6,7 @@ import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoResponseDT
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoResumoDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.service.ProdutoService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,23 +22,24 @@ public class ProdutoController {
     ProdutoService service;
 
 
-
    @Operation(summary = "Cadastra produto")
     @PostMapping
     public ResponseEntity<ProdutoResponseDTO> salvar(
-            @RequestBody ProdutoRequestDTO dto) {
+            @RequestBody @Valid ProdutoRequestDTO dto) {
 
         return ResponseEntity.ok(
                 service.cadastrarProduto(dto));
     }
 
-   @Operation(summary = "Cadastra lote de produtos")
+
+    @Operation(summary = "Cadastra lote de produtos")
     @PostMapping("/batch")
     public List<ProdutoResponseDTO> cadastrarProdutosEmLote(
             @RequestBody List<ProdutoRequestDTO> dtos
     ) {
         return service.cadastrarEmLote(dtos);
     }
+
    @Operation(summary = "Busca produto por ID")
     @GetMapping("/{id}")
     public ProdutoResponseDTO buscarProdutoPorId (@PathVariable Long id){
@@ -51,6 +53,7 @@ public class ProdutoController {
 
         return service.buscarProduto(nome);
     }
+
    @Operation(summary = " Busca produtos com valores maiores do que o informado")
     @GetMapping("/buscar-valor-maior")
     public List<ProdutoResumoDTO> buscarValorMaior(@RequestParam BigDecimal valorPesquisado){
@@ -70,8 +73,8 @@ public class ProdutoController {
     }
 
     @Operation(summary = "Busca os cinco mais baratos de uma categoria")
-    @GetMapping("/5-mais-baratos-categoria/{categoria}")
-    public List<ProdutoResumoDTO> cincoMaisBaratosCategorias(@RequestParam String categoriaPesquisada){
+    @GetMapping("/5-mais-baratos-categoria/{categoriaPesquisada}")
+    public List<ProdutoResumoDTO> cincoMaisBaratosCategorias(@PathVariable String categoriaPesquisada){
         return service.cincoProdutosMaisBaratosDeUmaCategoria(categoriaPesquisada);
     }
 
@@ -135,7 +138,7 @@ public class ProdutoController {
         return service.buscarCincoMaisCaros();
     }
 
-   @Operation(summary = "Deletar produto")
+   @Operation(summary = "Deleta produto")
     @DeleteMapping("/{id}")
     ResponseEntity<Void>excluirProduto(@PathVariable Long id){
         service.deletarProduto(id);

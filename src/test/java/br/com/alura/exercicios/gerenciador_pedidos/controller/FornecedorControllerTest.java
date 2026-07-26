@@ -43,8 +43,7 @@ class FornecedorControllerTest {
     @Autowired
     private JacksonTester<FornecedorRequestDTO> jsonDto;
 
-    @Mock
-    private FornecedorRepository repository;
+
 
     @Test
     void deveRetornar200ECadastrarFornecedor() throws Exception {
