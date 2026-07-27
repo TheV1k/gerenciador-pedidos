@@ -47,14 +47,6 @@ src
     └── java
         └── br/com/alura/exercicios/gerenciador_pedidos
             └── controller
-src/main/java
-├── controller
-├── dto
-├── exceptions
-├── models
-├── repository
-├── service
-└── GerenciadorPedidosApplication
 ```
 
 ---
