@@ -34,27 +34,23 @@ Sistema desenvolvido em Java com Spring Boot para gerenciamento de fornecedores,
 ```text
 src
 ├── main
-│   └── java
-│       └── br/com/alura/exercicios/gerenciador_pedidos
-│           ├── controller
-│           ├── dto
-│           ├── exceptions
-│           ├── models
-│           ├── repository
-│           ├── service
-│           └── GerenciadorPedidosApplication
+│   ├── java/br/com/alura/exercicios/gerenciador_pedidos
+│   │   ├── controller
+│   │   ├── dto
+│   │   ├── exceptions
+│   │   ├── models
+│   │   ├── repository
+│   │   ├── service
+│   │   └── GerenciadorPedidosApplication.java
+│   └── resources
+│       └── application.properties
 └── test
-    └── java
-        └── br/com/alura/exercicios/gerenciador_pedidos
-            └── controller
-src/main/java
-├── controller
-├── dto
-├── exceptions
-├── models
-├── repository
-├── service
-└── GerenciadorPedidosApplication
+    └── java/br/com/alura/exercicios/gerenciador_pedidos
+        ├── controller
+        ├── service
+        ├── validacoes
+        └── GerenciadorPedidosApplicationTests.java
+
 ```
 
 ---
