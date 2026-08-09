@@ -50,7 +50,6 @@ src
         ├── service
         ├── validacoes
         └── GerenciadorPedidosApplicationTests.java
-
 ```
 
 ---
@@ -287,7 +286,6 @@ O sistema permite gerar um relatório em PDF contendo:
 
 # 📈 Melhorias futuras
 
-* Testes unitários com JUnit e Mockito
 * Testes de integração
 * Docker e Docker Compose
 * Autenticação JWT

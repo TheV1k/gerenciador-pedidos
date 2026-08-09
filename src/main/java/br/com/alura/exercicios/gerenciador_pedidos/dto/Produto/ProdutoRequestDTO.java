@@ -17,5 +17,6 @@ public record ProdutoRequestDTO(
         @NotBlank
         String nomeCategoria,
         @NotNull
+        @NotBlank
         String nomeFornecedor
 ) {}

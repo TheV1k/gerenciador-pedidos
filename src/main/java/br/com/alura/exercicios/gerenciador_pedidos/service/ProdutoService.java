@@ -10,6 +10,7 @@ import br.com.alura.exercicios.gerenciador_pedidos.repository.CategoriaRepositor
 import br.com.alura.exercicios.gerenciador_pedidos.repository.FornecedorRepository;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.ProdutoRepository;
 import br.com.alura.exercicios.gerenciador_pedidos.validacoes.ProdutoValidator;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -136,7 +137,7 @@ public class ProdutoService {
 
     //Busca os produtos com valores maiores do que o informado
 
-    public List<ProdutoResumoDTO> buscarValorMaior(BigDecimal valorPesquisado){
+    public List<ProdutoResumoDTO> buscarValorMaior(BigDecimal valorPesquisado, PageRequest pageRequest){
 
        return
                repositorioProduto
@@ -147,7 +148,7 @@ public class ProdutoService {
 
     //Busca valores menores do que o pesquisado
 
-    public List<ProdutoResumoDTO> buscarMenoresValores(BigDecimal valorPesquisado){
+    public List<ProdutoResumoDTO> buscarMenoresValores(BigDecimal valorPesquisado, PageRequest pageRequest){
 
         return
          repositorioProduto.findByPrecoLessThanEqual(valorPesquisado).stream().map(this::toResumoDTO).toList();
@@ -176,7 +177,7 @@ public class ProdutoService {
 
     //Busca produto por parte do nome
 
-    public List<ProdutoResumoDTO> buscarParteDoNome(String produtoPesquisado){
+    public List<ProdutoResumoDTO> buscarParteDoNome(String produtoPesquisado, PageRequest pageRequest){
 
 
               return   repositorioProduto.
@@ -186,7 +187,7 @@ public class ProdutoService {
     }
 
     //Busca os produtos de uma categoria e ordena do menor para o maior valor
-     public List<ProdutoResumoDTO> ordenaDoMenorParaOMaior (String categoriaPesquisada) {
+     public List<ProdutoResumoDTO> ordenaDoMenorParaOMaior (String categoriaPesquisada, PageRequest pageRequest) {
 
       return repositorioProduto
                 .findByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(categoriaPesquisada).stream().map(this::toResumoDTO).toList();
@@ -198,7 +199,7 @@ public class ProdutoService {
 
     //Busca os produtos de uma categoria e ordena do maior para o menor valor
 
-    public List<ProdutoResumoDTO> ordenaDoMaiorParaOMenor(String categoria) {
+    public List<ProdutoResumoDTO> ordenaDoMaiorParaOMenor(String categoria, PageRequest pageRequest) {
 
       return repositorioProduto
                 .findByCategoriasNomeContainingIgnoreCaseOrderByPrecoDesc(categoria).stream().map(this::toResumoDTO).toList();
@@ -210,7 +211,7 @@ public class ProdutoService {
 
     //Lista produtos por fornecedor
 
-    public List<ProdutoResumoDTO> produtosPorFornecedor(String buscarFornecedor){
+    public List<ProdutoResumoDTO> produtosPorFornecedor(String buscarFornecedor, PageRequest pageRequest){
 
         return   repositorioProduto
                 .findByFornecedorNomeContainingIgnoreCase(buscarFornecedor).stream().map(this::toResumoDTO).toList();
@@ -222,7 +223,7 @@ public class ProdutoService {
 
     //Lista produtos maiores do que determinado valor
 
-    public List<ProdutoResumoDTO> buscaProdutoMaiorQueUmValor(BigDecimal valorPesquisado) {
+    public List<ProdutoResumoDTO> buscaProdutoMaiorQueUmValor(BigDecimal valorPesquisado, PageRequest pageRequest) {
 
         return repositorioProduto
                 .buscaProdutoMaiorValor(valorPesquisado).stream().map(this::toResumoDTO).toList();
@@ -231,21 +232,21 @@ public class ProdutoService {
     }
 
     // Retorna a lista de produtos em ordem crescente
-    public List<ProdutoResumoDTO> produtosEmOrdemCrescente() {
+    public List<ProdutoResumoDTO> produtosEmOrdemCrescente(PageRequest pageRequest) {
       return repositorioProduto
                 .produtoValorCrescente().stream().map(this::toResumoDTO).toList();
 
     }
 
     // Retorna a lista de produtos em ordem decrescente
-    public List<ProdutoResumoDTO> produtosEmOrdemDecrescente() {
+    public List<ProdutoResumoDTO> produtosEmOrdemDecrescente(PageRequest pageRequest) {
        return repositorioProduto
                 .produtoValorDecrescente().stream().map(this::toResumoDTO).toList();
 
     }
 
     //Busca produtos pela letra inicial
-    public List<ProdutoResumoDTO> buscarProdutosPelaLetraInicial(String letra) {
+    public List<ProdutoResumoDTO> buscarProdutosPelaLetraInicial(String letra, PageRequest pageRequest) {
 
        return repositorioProduto.produtoPelaInicial(letra).stream().map(this::toResumoDTO).toList();
 
@@ -253,7 +254,7 @@ public class ProdutoService {
 
 
     //Busca produtos por nome ou categoria
-    public List<ProdutoResumoDTO> buscarPorProdutoOuCategoria(String pesquisa) {
+    public List<ProdutoResumoDTO> buscarPorProdutoOuCategoria(String pesquisa, PageRequest pageRequest) {
 
        return repositorioProduto.filtraNomeOuCategoria(pesquisa).stream().map(this::toResumoDTO).toList();
 
