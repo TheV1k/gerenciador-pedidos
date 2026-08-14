@@ -19,7 +19,7 @@ Sistema desenvolvido em Java com Spring Boot para gerenciamento de fornecedores,
 * Cobertura de testes unitários para a camada web (Controllers) e regras de negócio
 ---
 
-# 🛠️ Tecnologias utilizadas
+## 🛠️ Tecnologias utilizadas
 
 * **Linguagem & Framework:** Java 21, Spring Boot 3
 * **Persistência:** Spring Data JPA, Hibernate, PostgreSQL
@@ -29,7 +29,7 @@ Sistema desenvolvido em Java com Spring Boot para gerenciamento de fornecedores,
 
 ---
 
-# 📂 Estrutura do projeto
+## 📂 Estrutura do projeto
 
 ```text
 src
@@ -54,7 +54,7 @@ src
 
 ---
 
-# 🏛️ Arquitetura da aplicação
+## 🏛️ Arquitetura da aplicação
 
 O projeto segue o padrão de arquitetura em camadas:
 
@@ -80,7 +80,7 @@ PostgreSQL
 
 ---
 
-# 📊 Modelo de domínio
+## 📊 Modelo de domínio
 
 ```text
 Fornecedor
@@ -102,27 +102,27 @@ Produto
 
 ---
 
-# ⚙️ Como executar o projeto
+## ⚙️ Como executar o projeto
 
-## Pré-requisitos
+### Pré-requisitos
 
 * Java 21+
 * Maven
 * PostgreSQL
 
-## Clone o repositório
+### Clone o repositório
 
 ```bash
 git clone https://github.com/TheV1k/gerenciador-pedidos.git
 ```
 
-## Acesse o diretório
+### Acesse o diretório
 
 ```bash
 cd gerenciador-pedidos
 ```
 
-## Configure o banco de dados
+### Configure o banco de dados
 
 Edite o arquivo:
 
@@ -141,7 +141,7 @@ spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 ```
 
-## Execute a aplicação
+### Execute a aplicação
 
 ```bash
 mvn spring-boot:run
@@ -171,7 +171,7 @@ Comportamento e chamadas simuladas de serviços através de Mocks.
 
 ---
 
-# 📖 Documentação da API
+## 📖 Documentação da API
 
 Após iniciar a aplicação, acesse:
 
@@ -183,9 +183,9 @@ A documentação completa dos endpoints estará disponível através do Swagger.
 
 ---
 
-# 📌 Exemplo de cadastro de fornecedor
+## 📌 Exemplo de cadastro de fornecedor
 
-## Requisição
+### Requisição
 
 ```http
 POST /fornecedores
@@ -202,9 +202,9 @@ POST /fornecedores
 
 ---
 
-# 📌 Exemplo de cadastro de produto
+## 📌 Exemplo de cadastro de produto
 
-## Requisição
+### Requisição
 
 ```http
 POST /produtos
@@ -221,9 +221,9 @@ POST /produtos
 
 ---
 
-# 📌 Exemplo de cadastro de pedido
+## 📌 Exemplo de cadastro de pedido
 
-## Requisição
+### Requisição
 
 ```http
 POST /pedidos
@@ -248,7 +248,7 @@ POST /pedidos
 
 ---
 
-# ⚠️ Tratamento de exceções
+## ⚠️ Tratamento de exceções
 
 A aplicação possui tratamento global de exceções através do `GlobalExceptionHandler`.
 
@@ -271,7 +271,7 @@ Exemplo de retorno:
 
 ---
 
-# 📄 Geração de PDF
+## 📄 Geração de PDF
 
 O sistema permite gerar um relatório em PDF contendo:
 
@@ -284,7 +284,7 @@ O sistema permite gerar um relatório em PDF contendo:
 
 ---
 
-# 📈 Melhorias futuras
+## 📈 Melhorias futuras
 
 * Testes de integração
 * Docker e Docker Compose
@@ -296,14 +296,14 @@ O sistema permite gerar um relatório em PDF contendo:
 
 ---
 
-# 📄 Licença
+## 📄 Licença
 
 ![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
-# 🤝 Autor
+## 🤝 Autor
 
 <p align="center">
   <a href="https://github.com/TheV1k">
