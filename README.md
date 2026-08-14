@@ -302,6 +302,7 @@ O sistema permite gerar um relatório em PDF contendo:
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
+---
 # 🤝 Autor
 
 <p align="center">
