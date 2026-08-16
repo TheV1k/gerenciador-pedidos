@@ -1,4 +1,5 @@
 package br.com.alura.exercicios.gerenciador_pedidos.service;
+
 import br.com.alura.exercicios.gerenciador_pedidos.Exceptions.ResourceNotFoundException;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoRequestDTO;
 import br.com.alura.exercicios.gerenciador_pedidos.dto.Produto.ProdutoResponseDTO;
@@ -10,7 +11,7 @@ import br.com.alura.exercicios.gerenciador_pedidos.repository.CategoriaRepositor
 import br.com.alura.exercicios.gerenciador_pedidos.repository.FornecedorRepository;
 import br.com.alura.exercicios.gerenciador_pedidos.repository.ProdutoRepository;
 import br.com.alura.exercicios.gerenciador_pedidos.validacoes.ProdutoValidator;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,49 +20,52 @@ import java.util.Optional;
 
 @Service
 public class ProdutoService {
+
     private final ProdutoRepository repositorioProduto;
     private final CategoriaRepository repositorioCategoria;
     private final FornecedorRepository repositorioFornecedor;
     private final ProdutoValidator validator;
 
-    public ProdutoService(ProdutoRepository repositorioProduto, CategoriaRepository repositorioCategoria, FornecedorRepository repositorioFornecedor, ProdutoValidator validator) {
+    public ProdutoService(ProdutoRepository repositorioProduto,
+                          CategoriaRepository repositorioCategoria,
+                          FornecedorRepository repositorioFornecedor,
+                          ProdutoValidator validator) {
         this.repositorioProduto = repositorioProduto;
         this.repositorioCategoria = repositorioCategoria;
         this.repositorioFornecedor = repositorioFornecedor;
         this.validator = validator;
     }
 
-    //Método para cadastro de produtos
-
-    public ProdutoResponseDTO cadastrarProduto(ProdutoRequestDTO dto){
-
+    // Cadastro individual com validação e lançamento de exceção para Categoria
+    public ProdutoResponseDTO cadastrarProduto(ProdutoRequestDTO dto) {
         validator.validarProduto(dto);
+
         Categoria categoria = repositorioCategoria
                 .findAllByNomeContainingIgnoreCase(dto.nomeCategoria())
                 .stream()
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
+
         Fornecedor fornecedor = repositorioFornecedor
-                .findByNomeContainingIgnoreCase(dto.nomeFornecedor()).stream()
+                .findByNomeContainingIgnoreCase(dto.nomeFornecedor())
+                .stream()
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Fornecedor não encontrado"));
 
-
         Produto produto = new Produto(dto);
-
-
         produto.setCategorias(List.of(categoria));
         produto.setFornecedor(fornecedor);
-        Produto produtoSalvo = repositorioProduto.save(produto);
 
+        Produto produtoSalvo = repositorioProduto.save(produto);
         return toResponseDTO(produtoSalvo);
     }
 
-    //Cadastra lote de produtos
+    // Cadastro em lote com validação de cada item
     public List<ProdutoResponseDTO> cadastrarEmLote(List<ProdutoRequestDTO> dtos) {
-
         List<Produto> produtos = dtos.stream()
                 .map(dto -> {
+                    validator.validarProduto(dto);
+
                     Categoria categoria = repositorioCategoria
                             .findAllByNomeContainingIgnoreCase(dto.nomeCategoria())
                             .stream()
@@ -75,7 +79,6 @@ public class ProdutoService {
                             .orElseThrow(() -> new ResourceNotFoundException("Fornecedor não encontrado"));
 
                     Produto produto = new Produto(dto);
-
                     produto.setCategorias(List.of(categoria));
                     produto.setFornecedor(fornecedor);
 
@@ -90,15 +93,11 @@ public class ProdutoService {
                 .toList();
     }
 
-
-    //Converte para ResponseDTO
-
+    // Mapeamento seguro para ResponseDTO
     ProdutoResponseDTO toResponseDTO(Produto produto) {
-
-        String categoria = produto.getCategorias()
-                .stream()
-                .findFirst()
-                .map(Categoria::getNome).orElse(null);
+        String categoria = (produto.getCategorias() != null && !produto.getCategorias().isEmpty())
+                ? produto.getCategorias().get(0).getNome()
+                : null;
 
         String fornecedor = Optional.ofNullable(produto.getFornecedor())
                 .map(Fornecedor::getNome)
@@ -113,21 +112,25 @@ public class ProdutoService {
         );
     }
 
-    //Converte para ResumoDTO
+    // Mapeamento seguro para ResumoDTO (evita NullPointerException e IndexOutOfBoundsException)
+    private ProdutoResumoDTO toResumoDTO(Produto produto) {
+        String categoria = (produto.getCategorias() != null && !produto.getCategorias().isEmpty())
+                ? produto.getCategorias().get(0).getNome()
+                : "Sem categoria";
 
-    private  ProdutoResumoDTO toResumoDTO(Produto produto){
+        String fornecedor = Optional.ofNullable(produto.getFornecedor())
+                .map(Fornecedor::getNome)
+                .orElse("Sem fornecedor");
 
         return new ProdutoResumoDTO(
                 produto.getNome(),
                 produto.getPreco(),
-                produto.getCategorias().get(0).getNome(),
-                produto.getFornecedor().getNome()
+                categoria,
+                fornecedor
         );
     }
 
-    // Busca produto pelo nome
     public ProdutoResponseDTO buscarProduto(String nome) {
-
         Produto produto = repositorioProduto
                 .findByNomeEqualsIgnoreCase(nome)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
@@ -135,141 +138,106 @@ public class ProdutoService {
         return toResponseDTO(produto);
     }
 
-    //Busca os produtos com valores maiores do que o informado
-
-    public List<ProdutoResumoDTO> buscarValorMaior(BigDecimal valorPesquisado, PageRequest pageRequest){
-
-       return
-               repositorioProduto
-                       .findByPrecoGreaterThanEqual(valorPesquisado)
-                       .stream()
-                       .map(this::toResumoDTO).toList();
+    // Consultas paginadas repassando o Pageable para o repositório
+    public List<ProdutoResumoDTO> buscarValorMaior(BigDecimal valorPesquisado, Pageable pageable) {
+        return repositorioProduto.findByPrecoGreaterThanEqual(valorPesquisado, pageable)
+                .stream()
+                .map(this::toResumoDTO)
+                .toList();
     }
 
-    //Busca valores menores do que o pesquisado
-
-    public List<ProdutoResumoDTO> buscarMenoresValores(BigDecimal valorPesquisado, PageRequest pageRequest){
-
-        return
-         repositorioProduto.findByPrecoLessThanEqual(valorPesquisado).stream().map(this::toResumoDTO).toList();
-
+    public List<ProdutoResumoDTO> buscarMenoresValores(BigDecimal valorPesquisado, Pageable pageable) {
+        return repositorioProduto.findByPrecoLessThanEqual(valorPesquisado, pageable)
+                .stream()
+                .map(this::toResumoDTO)
+                .toList();
     }
 
-    //Busca os três produtos mais caros
-
-    public List<ProdutoResumoDTO>  tresProdutosMaisCaros() {
-
-        return
-                repositorioProduto.findTop3ByOrderByPrecoDesc().stream().map(this::toResumoDTO).toList();
-
+    public List<ProdutoResumoDTO> tresProdutosMaisCaros() {
+        return repositorioProduto.findTop3ByOrderByPrecoDesc()
+                .stream()
+                .map(this::toResumoDTO)
+                .toList();
     }
-
-    // Busca os cinco produtos mais baratos de uma categoria
 
     public List<ProdutoResumoDTO> cincoProdutosMaisBaratosDeUmaCategoria(String categoriaPesquisada) {
-
-
-       return repositorioProduto
-                .findTop5ByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(categoriaPesquisada).stream().map(this::toResumoDTO).toList();
-
-
+        return repositorioProduto.findTop5ByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(categoriaPesquisada)
+                .stream()
+                .map(this::toResumoDTO)
+                .toList();
     }
 
-    //Busca produto por parte do nome
-
-    public List<ProdutoResumoDTO> buscarParteDoNome(String produtoPesquisado, PageRequest pageRequest){
-
-
-              return   repositorioProduto.
-                        findByNomeContainingIgnoreCase(produtoPesquisado).stream().map(this::toResumoDTO).toList();
-
-
+    public List<ProdutoResumoDTO> buscarParteDoNome(String produtoPesquisado, Pageable pageable) {
+        return repositorioProduto.findByNomeContainingIgnoreCase(produtoPesquisado, pageable)
+                .stream()
+                .map(this::toResumoDTO)
+                .toList();
     }
 
-    //Busca os produtos de uma categoria e ordena do menor para o maior valor
-     public List<ProdutoResumoDTO> ordenaDoMenorParaOMaior (String categoriaPesquisada, PageRequest pageRequest) {
-
-      return repositorioProduto
-                .findByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(categoriaPesquisada).stream().map(this::toResumoDTO).toList();
-
-
-
+    public List<ProdutoResumoDTO> ordenaDoMenorParaOMaior(String categoriaPesquisada, Pageable pageable) {
+        return repositorioProduto.findByCategoriasNomeContainingIgnoreCaseOrderByPrecoAsc(categoriaPesquisada, pageable)
+                .stream()
+                .map(this::toResumoDTO)
+                .toList();
     }
 
-
-    //Busca os produtos de uma categoria e ordena do maior para o menor valor
-
-    public List<ProdutoResumoDTO> ordenaDoMaiorParaOMenor(String categoria, PageRequest pageRequest) {
-
-      return repositorioProduto
-                .findByCategoriasNomeContainingIgnoreCaseOrderByPrecoDesc(categoria).stream().map(this::toResumoDTO).toList();
-
-
-
+    public List<ProdutoResumoDTO> ordenaDoMaiorParaOMenor(String categoria, Pageable pageable) {
+        return repositorioProduto.findByCategoriasNomeContainingIgnoreCaseOrderByPrecoDesc(categoria, pageable)
+                .stream()
+                .map(this::toResumoDTO)
+                .toList();
     }
 
-
-    //Lista produtos por fornecedor
-
-    public List<ProdutoResumoDTO> produtosPorFornecedor(String buscarFornecedor, PageRequest pageRequest){
-
-        return   repositorioProduto
-                .findByFornecedorNomeContainingIgnoreCase(buscarFornecedor).stream().map(this::toResumoDTO).toList();
-
-
+    public List<ProdutoResumoDTO> produtosPorFornecedor(String buscarFornecedor, Pageable pageable) {
+        return repositorioProduto.findByFornecedorNomeContainingIgnoreCase(buscarFornecedor, pageable)
+                .stream()
+                .map(this::toResumoDTO)
+                .toList();
     }
 
-
-
-    //Lista produtos maiores do que determinado valor
-
-    public List<ProdutoResumoDTO> buscaProdutoMaiorQueUmValor(BigDecimal valorPesquisado, PageRequest pageRequest) {
-
-        return repositorioProduto
-                .buscaProdutoMaiorValor(valorPesquisado).stream().map(this::toResumoDTO).toList();
-
-
+    public List<ProdutoResumoDTO> buscaProdutoMaiorQueUmValor(BigDecimal valorPesquisado, Pageable pageable) {
+        return repositorioProduto.buscaProdutoMaiorValor(valorPesquisado, pageable)
+                .stream()
+                .map(this::toResumoDTO)
+                .toList();
     }
 
-    // Retorna a lista de produtos em ordem crescente
-    public List<ProdutoResumoDTO> produtosEmOrdemCrescente(PageRequest pageRequest) {
-      return repositorioProduto
-                .produtoValorCrescente().stream().map(this::toResumoDTO).toList();
-
+    public List<ProdutoResumoDTO> produtosEmOrdemCrescente(Pageable pageable) {
+        return repositorioProduto.produtoValorCrescente(pageable)
+                .stream()
+                .map(this::toResumoDTO)
+                .toList();
     }
 
-    // Retorna a lista de produtos em ordem decrescente
-    public List<ProdutoResumoDTO> produtosEmOrdemDecrescente(PageRequest pageRequest) {
-       return repositorioProduto
-                .produtoValorDecrescente().stream().map(this::toResumoDTO).toList();
-
+    public List<ProdutoResumoDTO> produtosEmOrdemDecrescente(Pageable pageable) {
+        return repositorioProduto.produtoValorDecrescente(pageable)
+                .stream()
+                .map(this::toResumoDTO)
+                .toList();
     }
 
-    //Busca produtos pela letra inicial
-    public List<ProdutoResumoDTO> buscarProdutosPelaLetraInicial(String letra, PageRequest pageRequest) {
-
-       return repositorioProduto.produtoPelaInicial(letra).stream().map(this::toResumoDTO).toList();
-
+    public List<ProdutoResumoDTO> buscarProdutosPelaLetraInicial(String letra, Pageable pageable) {
+        return repositorioProduto.produtoPelaInicial(letra, pageable)
+                .stream()
+                .map(this::toResumoDTO)
+                .toList();
     }
 
-
-    //Busca produtos por nome ou categoria
-    public List<ProdutoResumoDTO> buscarPorProdutoOuCategoria(String pesquisa, PageRequest pageRequest) {
-
-       return repositorioProduto.filtraNomeOuCategoria(pesquisa).stream().map(this::toResumoDTO).toList();
-
-
-
+    public List<ProdutoResumoDTO> buscarPorProdutoOuCategoria(String pesquisa, Pageable pageable) {
+        return repositorioProduto.filtraNomeOuCategoria(pesquisa, pageable)
+                .stream()
+                .map(this::toResumoDTO)
+                .toList();
     }
 
-    //Retorna os cinco produtos mais caros utilizando pesquisa nativa
     public List<ProdutoResumoDTO> buscarCincoMaisCaros() {
-
-        return repositorioProduto.cincoProdutosMaisCaros().stream().map(this::toResumoDTO).toList();
+        return repositorioProduto.cincoProdutosMaisCaros()
+                .stream()
+                .map(this::toResumoDTO)
+                .toList();
     }
 
     public ProdutoResponseDTO buscarProdutoPorId(Long id) {
-
         Produto produto = repositorioProduto.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado."));
 
@@ -277,7 +245,6 @@ public class ProdutoService {
     }
 
     public void deletarProduto(Long id) {
-
         if (!repositorioProduto.existsById(id)) {
             throw new ResourceNotFoundException("Produto não encontrado");
         }
